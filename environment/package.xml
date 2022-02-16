@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>environment</name>
+  <version>0.0.1</version>
+  <description>Simulation Environment For Vision-based Agile Flight</description>
+
+  <maintainer email="song@ifi.uzh.ch">song</maintainer>
+
+  <license>GNU GPL</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>catkin_simple</buildtool_depend>
+
+  <depend>agilib</depend>
+  <depend>agiros</depend>
+  <depend>roscpp</depend>
+  <depend>rosgraph_msgs</depend>
+
+  <!-- Flightmare -->
+  <depend>flightlib</depend>
+  <depend>cv_bridge</depend>
+  <depend>image_transport</depend>
+
+</package>

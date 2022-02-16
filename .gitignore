@@ -14,8 +14,8 @@
 .idea/
 cmake-build-debug/
 
-# Vim Stuff
 *.swp
+# Vim Stuff
 Session.vim
 
 # Tag files
