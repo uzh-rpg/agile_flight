@@ -7,8 +7,8 @@
 
 
 namespace fli = flightlib;
-using namespace agi;
 
+using namespace agi;
 
 Environment::Environment(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   : nh_(nh),
@@ -330,14 +330,20 @@ bool Environment::connectUnity() {
   return unity_ready_;
 }
 
-bool Environment::configUnityCamera() {
-  std::string config_file;
+void Environment::configUnityCamera() {
+  std::string cfg_path = getenv("FLIGHTMARE_PATH") +
+                         std::string("/flightpy/configs/control/config.yaml");
   // Flightmare Quadrotor and Unity Camera
-  unity_quad_ = std::make_shared<fli::Quadrotor>();
+  std::cout << "hello world 0" << std::endl;
+  unity_quad_ = std::make_shared<fli::Quadrotor>(cfg_path);
+  std::cout << "hello world 1" << std::endl;
   fli::Vector<3> quad_size(0.5, 0.5, 0.2);
   unity_quad_->setSize(quad_size);
 
-  unity_camera_ = std::make_shared<fli::RGBCamera>();
+  std::cout << "hello world 2" << std::endl;
+  // unity_camera_ = std::make_shared<fli::RGBCamera>();
+
+  std::cout << "hello world 3" << std::endl;
   fli::Vector<3> B_r_BC(0.0, 0.0, 0.3);
   // rotational angle of the camera
   fli::Vector<3> roll_pitch_yaw(0.0, 0.0, -90.0);
@@ -349,14 +355,15 @@ bool Environment::configUnityCamera() {
   std::vector<bool> post_processing = {false, false, false};
 
   std::cout << "UNityquad" << std::endl;
+  std::string camera_cfg_file;
   // load camera configurations
-  if (!pnh_.getParam("camera_config", config_file)) {
+  if (!pnh_.getParam("camera_config", camera_cfg_file)) {
     ROS_WARN(
       "[%s] Could not load camera configuration. Using the default value",
       pnh_.getNamespace().c_str());
   } else {
     ROS_INFO("[%s] Loading camera configuration.", pnh_.getNamespace().c_str());
-    YAML::Node cfg = YAML::LoadFile(config_file);
+    YAML::Node cfg = YAML::LoadFile(camera_cfg_file);
 
     std::vector<fli::Scalar> t_BC_vec =
       cfg["t_BC"].as<std::vector<fli::Scalar>>();
@@ -399,7 +406,6 @@ bool Environment::configUnityCamera() {
   unity_camera_->setHeight(height);
   unity_camera_->setRelPose(B_r_BC, R_BC);
   unity_quad_->addRGBCamera(unity_camera_);
-  return true;
 }
 
 // bool Environment::loadRacetrack() {

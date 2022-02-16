@@ -45,6 +45,8 @@ class Environment {
   Environment() : Environment(ros::NodeHandle(), ros::NodeHandle("~")) {}
   ~Environment();
 
+  void configUnityCamera();
+
  private:
   void resetCallback(const std_msgs::EmptyConstPtr& msg);
   void loadQuadrotorCallback(const std_msgs::StringConstPtr& msg);
@@ -58,7 +60,6 @@ class Environment {
   bool connectUnity();
 
   bool loadRacetrack();
-  bool configUnityCamera();
   void loadMockVIOParamsCallback(const std_msgs::StringConstPtr& msg);
 
   ros::NodeHandle nh_, pnh_;
