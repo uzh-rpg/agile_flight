@@ -1,0 +1,32 @@
+
+# Python stuff
+*.pyc
+*__pycache__
+
+# Compile Commands
+*/compile_commands.json
+*/.clangd
+
+# VScode stuff
+.vscode/*
+
+# CLion Stuff
+.idea/
+cmake-build-debug/
+
+# Vim Stuff
+*.swp
+Session.vim
+
+# Tag files
+TAGS
+GTAGS
+GRTAGS
+GPATH
+
+# temporary files
+*~
+
+.history/*
+.vscode/*
+

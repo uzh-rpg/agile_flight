@@ -1,0 +1,12 @@
+[submodule "agilicious"]
+	path = agilicious
+	url = git@github.com:uzh-rpg/agilicious.git
+[submodule "flightmare"]
+	path = flightmare
+	url = git@github.com:uzh-rpg/flightmare_internal.git
+[submodule "catkin_simple"]
+	path = catkin_simple
+	url = https://github.com/catkin/catkin_simple
+[submodule "mav_comm"]
+	path = mav_comm
+	url = https://github.com/ethz-asl/mav_comm
