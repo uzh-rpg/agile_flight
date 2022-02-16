@@ -75,35 +75,11 @@ Environment::Environment(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   QuadState quad_state;
 
   if (render_) {
-    // Flightmare Quadrotor and Unity Camera
-    unity_quad_ = std::make_shared<fli::Quadrotor>();
-    fli::Vector<3> quad_size(0.5, 0.5, 0.2);
-    unity_quad_->setSize(quad_size);
-
-    unity_camera_ = std::make_shared<fli::RGBCamera>();
-    fli::Vector<3> B_r_BC(0.0, 0.0, 0.3);
-    fli::Scalar pitch_angle_deg = 0.0;
-    fli::Matrix<3, 3> R_BC =
-      (Eigen::AngleAxisd(0.0 * M_PI, Eigen::Vector3d::UnitX()) *
-       Eigen::AngleAxisd(-pitch_angle_deg / 180.0 * M_PI,
-                         Eigen::Vector3d::UnitY()) *
-       Eigen::AngleAxisd(-0.5 * M_PI, Eigen::Vector3d::UnitZ()))
-        .toRotationMatrix();
-    double hor_fov_radians = (M_PI * (110 / 180.0));
-    double width = 640.0;
-    double height = 480.0;
-    // Recalculate here: https://themetalmuncher.github.io/fov-calc/;
-    double vertical_fov =
-      2. * std::atan(std::tan(hor_fov_radians / 2) * height / width);
-    vertical_fov = (vertical_fov / M_PI) * 180.0;  // convert back to degrees
-    std::cout << "Vertical FoV is " << vertical_fov << std::endl;
-    unity_camera_->setFOV(vertical_fov);
-    unity_camera_->setWidth(width);
-    unity_camera_->setHeight(height);
-    unity_camera_->setRelPose(B_r_BC, R_BC);
-    unity_quad_->addRGBCamera(unity_camera_);
-
     // Connect Unity
+    ROS_INFO(
+      "Rendering is enabled. Configuring Unity camera and connecting to "
+      "Unity.");
+    configUnityCamera();
     setUnity(unity_render_);
     connectUnity();
   }
@@ -335,10 +311,11 @@ bool Environment::setUnity(const bool render) {
     unity_bridge_ = fli::UnityBridge::getInstance();
     unity_bridge_->addQuadrotor(unity_quad_);
     //
-    if (!loadRacetrack(pnh_)) {
-      ROS_WARN("[%s] No race track is specified.", pnh_.getNamespace().c_str());
-    } else {
-    };
+    // if (!loadRacetrack()) {
+    //   ROS_WARN("[%s] No race track is specified.",
+    //   pnh_.getNamespace().c_str());
+    // } else {
+    // };
 
     ROS_INFO("[%s] Unity Bridge is created.", pnh_.getNamespace().c_str());
     return true;
@@ -353,54 +330,127 @@ bool Environment::connectUnity() {
   return unity_ready_;
 }
 
-bool Environment::loadRacetrack(const ros::NodeHandle &nh) {
+bool Environment::configUnityCamera() {
   std::string config_file;
-  if (!nh.getParam("race_config", config_file)) {
-    ROS_ERROR("[%s] Could not load race track configuration.",
-              pnh_.getNamespace().c_str());
-    return false;
+  // Flightmare Quadrotor and Unity Camera
+  unity_quad_ = std::make_shared<fli::Quadrotor>();
+  fli::Vector<3> quad_size(0.5, 0.5, 0.2);
+  unity_quad_->setSize(quad_size);
+
+  unity_camera_ = std::make_shared<fli::RGBCamera>();
+  fli::Vector<3> B_r_BC(0.0, 0.0, 0.3);
+  // rotational angle of the camera
+  fli::Vector<3> roll_pitch_yaw(0.0, 0.0, -90.0);
+
+  fli::Scalar hor_fov_radians = (M_PI * (110 / 180.0));
+  //
+  fli::Scalar width = 640.0;
+  fli::Scalar height = 480.0;
+  std::vector<bool> post_processing = {false, false, false};
+
+  std::cout << "UNityquad" << std::endl;
+  // load camera configurations
+  if (!pnh_.getParam("camera_config", config_file)) {
+    ROS_WARN(
+      "[%s] Could not load camera configuration. Using the default value",
+      pnh_.getNamespace().c_str());
   } else {
-    ROS_INFO("[%s] Loading race track configuration.",
-             pnh_.getNamespace().c_str());
-    YAML::Node config_node = YAML::LoadFile(config_file);
-    Scalar num_gate = config_node["gates"]["N"].as<Scalar>();
-    for (size_t i = 0; i < num_gate; i++) {
-      std::string gate_id = "Gate" + std::to_string(i + 1);
-      std::string prefab_id = "rpg_gate";
+    ROS_INFO("[%s] Loading camera configuration.", pnh_.getNamespace().c_str());
+    YAML::Node cfg = YAML::LoadFile(config_file);
 
-      // load gate position, rotation, and scale
-      std::vector<fli::Scalar> pos_vec =
-        config_node["gates"][gate_id]["position"]
-          .as<std::vector<fli::Scalar>>();
-      std::vector<fli::Scalar> quat_vec =
-        config_node["gates"][gate_id]["rotation"]
-          .as<std::vector<fli::Scalar>>();
-      std::vector<fli::Scalar> scale_vec =
-        config_node["gates"][gate_id]["scale"].as<std::vector<fli::Scalar>>();
+    std::vector<fli::Scalar> t_BC_vec =
+      cfg["t_BC"].as<std::vector<fli::Scalar>>();
+    std::vector<fli::Scalar> r_BC_vec =
+      cfg["r_BC"].as<std::vector<fli::Scalar>>();
 
-      // create gate
-      std::shared_ptr<fli::StaticGate> gate =
-        std::make_shared<fli::StaticGate>(gate_id, prefab_id);
-      gate->setPosition(fli::Vector<3>(pos_vec.data()));
-      gate->setRotation(
-        fli::Quaternion(quat_vec[0], quat_vec[1], quat_vec[2], quat_vec[3]));
-      gate->setSize(fli::Vector<3>(
-        scale_vec.data()));  // for visualization, not the acutal physical size
+    //
+    B_r_BC << t_BC_vec[0], t_BC_vec[1], t_BC_vec[2];
+    roll_pitch_yaw << r_BC_vec[0], r_BC_vec[1], r_BC_vec[2];
 
-      unity_gates_.push_back(gate);
-      unity_bridge_->addStaticObject(gate);
+    // FOV
+    hor_fov_radians = (cfg["fov"].as<fli::Scalar>() * M_PI / 180.0);
 
-      //
-      std::vector<fli::Scalar> start_pos_vec =
-        config_node["start_pos"].as<std::vector<fli::Scalar>>();
-      std::vector<fli::Scalar> goal_pos_vec =
-        config_node["goal_pos"].as<std::vector<fli::Scalar>>();
-      start_pos_ << start_pos_vec[0], start_pos_vec[1], start_pos_vec[2];
-      goal_pos_ << goal_pos_vec[0], goal_pos_vec[1], goal_pos_vec[2];
-    }
-    return true;
+    // depth, segmentation, opticalflow
+    post_processing[0] = cfg["enable_depth"].as<bool>();
+    post_processing[1] = cfg["enable_segmentation"].as<bool>();
+    post_processing[2] = cfg["enable_opticalflow"].as<bool>();
+
+    // width and height
+    width = cfg["width"].as<fli::Scalar>();
+    height = cfg["height"].as<fli::Scalar>();
   }
+
+  fli::Matrix<3, 3> R_BC = (Eigen::AngleAxisd(roll_pitch_yaw[0] / 180.0 * M_PI,
+                                              Eigen::Vector3d::UnitX()) *
+                            Eigen::AngleAxisd(roll_pitch_yaw[1] / 180.0 * M_PI,
+                                              Eigen::Vector3d::UnitY()) *
+                            Eigen::AngleAxisd(roll_pitch_yaw[2] / 180.0 * M_PI,
+                                              Eigen::Vector3d::UnitZ()))
+                             .toRotationMatrix();
+
+  // Recalculate here: https://themetalmuncher.github.io/fov-calc/;
+  fli::Scalar vertical_fov =
+    2. * std::atan(std::tan(hor_fov_radians / 2) * height / width);
+  vertical_fov = (vertical_fov / M_PI) * 180.0;  // convert back to degrees
+
+  std::cout << "Vertical FoV is " << vertical_fov << std::endl;
+  unity_camera_->setFOV(vertical_fov);
+  unity_camera_->setWidth(width);
+  unity_camera_->setHeight(height);
+  unity_camera_->setRelPose(B_r_BC, R_BC);
+  unity_quad_->addRGBCamera(unity_camera_);
+  return true;
 }
+
+// bool Environment::loadRacetrack() {
+//   std::string config_file;
+//   if (!nh.getParam("race_config", config_file)) {
+//     ROS_ERROR("[%s] Could not load race track configuration.",
+//               pnh_.getNamespace().c_str());
+//     return false;
+//   } else {
+//     ROS_INFO("[%s] Loading race track configuration.",
+//              pnh_.getNamespace().c_str());
+//     YAML::Node config_node = YAML::LoadFile(config_file);
+//     Scalar num_gate = config_node["gates"]["N"].as<Scalar>();
+//     for (size_t i = 0; i < num_gate; i++) {
+//       std::string gate_id = "Gate" + std::to_string(i + 1);
+//       std::string prefab_id = "rpg_gate";
+
+//       // load gate position, rotation, and scale
+//       std::vector<fli::Scalar> pos_vec =
+//         config_node["gates"][gate_id]["position"]
+//           .as<std::vector<fli::Scalar>>();
+//       std::vector<fli::Scalar> quat_vec =
+//         config_node["gates"][gate_id]["rotation"]
+//           .as<std::vector<fli::Scalar>>();
+//       std::vector<fli::Scalar> scale_vec =
+//         config_node["gates"][gate_id]["scale"].as<std::vector<fli::Scalar>>();
+
+//       // create gate
+//       std::shared_ptr<fli::StaticGate> gate =
+//         std::make_shared<fli::StaticGate>(gate_id, prefab_id);
+//       gate->setPosition(fli::Vector<3>(pos_vec.data()));
+//       gate->setRotation(
+//         fli::Quaternion(quat_vec[0], quat_vec[1], quat_vec[2], quat_vec[3]));
+//       gate->setSize(fli::Vector<3>(
+//         scale_vec.data()));  // for visualization, not the acutal physical
+//         size
+
+//       unity_gates_.push_back(gate);
+//       unity_bridge_->addStaticObject(gate);
+
+//       //
+//       std::vector<fli::Scalar> start_pos_vec =
+//         config_node["start_pos"].as<std::vector<fli::Scalar>>();
+//       std::vector<fli::Scalar> goal_pos_vec =
+//         config_node["goal_pos"].as<std::vector<fli::Scalar>>();
+//       start_pos_ << start_pos_vec[0], start_pos_vec[1], start_pos_vec[2];
+//       goal_pos_ << goal_pos_vec[0], goal_pos_vec[1], goal_pos_vec[2];
+//     }
+//     return true;
+//   }
+// }
 
 void Environment::loadMockVIOParamsCallback(
   const std_msgs::StringConstPtr &msg) {
