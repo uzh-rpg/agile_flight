@@ -5,12 +5,15 @@
 #include "nav_msgs/Odometry.h"
 #include "rosgraph_msgs/Clock.h"
 
+
+namespace fli = flightlib;
 using namespace agi;
 
-Environment::RaceSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
+
+Environment::Environment(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   : nh_(nh),
     pnh_(pnh),
-    unity_scene_id_(flightlib::UnityScene::WAREHOUSE),
+    unity_scene_id_(fli::UnityScene::WAREHOUSE),
     unity_ready_(false),
     unity_render_(true) {
   bool use_bem = false;
@@ -73,18 +76,18 @@ Environment::RaceSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
 
   if (render_) {
     // Flightmare Quadrotor and Unity Camera
-    unity_quad_ = std::make_shared<flightlib::Quadrotor>();
-    flightlib::Vector<3> quad_size(0.5, 0.5, 0.2);
+    unity_quad_ = std::make_shared<fli::Quadrotor>();
+    fli::Vector<3> quad_size(0.5, 0.5, 0.2);
     unity_quad_->setSize(quad_size);
 
-    unity_camera_ = std::make_shared<flightlib::RGBCamera>();
-    flightlib::Vector<3> B_r_BC(0.0, 0.0, 0.3);
-    Scalar pitch_angle_deg = 0.0;
-    flightlib::Matrix<3, 3> R_BC =
-      (Eigen::AngleAxisf(0.0 * M_PI, Eigen::Vector3f::UnitX()) *
-       Eigen::AngleAxisf(-pitch_angle_deg / 180.0 * M_PI,
-                         Eigen::Vector3f::UnitY()) *
-       Eigen::AngleAxisf(-0.5 * M_PI, Eigen::Vector3f::UnitZ()))
+    unity_camera_ = std::make_shared<fli::RGBCamera>();
+    fli::Vector<3> B_r_BC(0.0, 0.0, 0.3);
+    fli::Scalar pitch_angle_deg = 0.0;
+    fli::Matrix<3, 3> R_BC =
+      (Eigen::AngleAxisd(0.0 * M_PI, Eigen::Vector3d::UnitX()) *
+       Eigen::AngleAxisd(-pitch_angle_deg / 180.0 * M_PI,
+                         Eigen::Vector3d::UnitY()) *
+       Eigen::AngleAxisd(-0.5 * M_PI, Eigen::Vector3d::UnitZ()))
         .toRotationMatrix();
     double hor_fov_radians = (M_PI * (110 / 180.0));
     double width = 640.0;
@@ -122,7 +125,7 @@ Environment::RaceSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   sim_thread_ = std::thread(&Environment::simLoop, this);
 }
 
-Environment::~RaceSim() {
+Environment::~Environment() {
   if (sim_thread_.joinable()) sim_thread_.join();
   if (render_thread_.joinable()) render_thread_.join();
 }
@@ -311,10 +314,10 @@ void Environment::publishImages(const QuadState &state) {
   sensor_msgs::ImagePtr rgb_msg;
   frame_id_ += 1;
   // render the frame
-  flightlib::QuadState unity_quad_state;
+  fli::QuadState unity_quad_state;
   unity_quad_state.setZero();
-  unity_quad_state.p = state.p.cast<flightlib::Scalar>();
-  unity_quad_state.qx = state.qx.cast<flightlib::Scalar>();
+  unity_quad_state.p = state.p.cast<fli::Scalar>();
+  unity_quad_state.qx = state.qx.cast<fli::Scalar>();
   unity_quad_->setState(unity_quad_state);
   // Warning, delay
   unity_bridge_->getRender(frame_id_);
@@ -329,7 +332,7 @@ void Environment::publishImages(const QuadState &state) {
 bool Environment::setUnity(const bool render) {
   unity_render_ = render;
   if (unity_render_ && unity_bridge_ == nullptr) {
-    unity_bridge_ = flightlib::UnityBridge::getInstance();
+    unity_bridge_ = fli::UnityBridge::getInstance();
     unity_bridge_->addQuadrotor(unity_quad_);
     //
     if (!loadRacetrack(pnh_)) {
@@ -366,33 +369,32 @@ bool Environment::loadRacetrack(const ros::NodeHandle &nh) {
       std::string prefab_id = "rpg_gate";
 
       // load gate position, rotation, and scale
-      std::vector<flightlib::Scalar> pos_vec =
+      std::vector<fli::Scalar> pos_vec =
         config_node["gates"][gate_id]["position"]
-          .as<std::vector<flightlib::Scalar>>();
-      std::vector<flightlib::Scalar> quat_vec =
+          .as<std::vector<fli::Scalar>>();
+      std::vector<fli::Scalar> quat_vec =
         config_node["gates"][gate_id]["rotation"]
-          .as<std::vector<flightlib::Scalar>>();
-      std::vector<flightlib::Scalar> scale_vec =
-        config_node["gates"][gate_id]["scale"]
-          .as<std::vector<flightlib::Scalar>>();
+          .as<std::vector<fli::Scalar>>();
+      std::vector<fli::Scalar> scale_vec =
+        config_node["gates"][gate_id]["scale"].as<std::vector<fli::Scalar>>();
 
       // create gate
-      std::shared_ptr<flightlib::StaticGate> gate =
-        std::make_shared<flightlib::StaticGate>(gate_id, prefab_id);
-      gate->setPosition(flightlib::Vector<3>(pos_vec.data()));
-      gate->setRotation(flightlib::Quaternion(quat_vec[0], quat_vec[1],
-                                              quat_vec[2], quat_vec[3]));
-      gate->setSize(flightlib::Vector<3>(
+      std::shared_ptr<fli::StaticGate> gate =
+        std::make_shared<fli::StaticGate>(gate_id, prefab_id);
+      gate->setPosition(fli::Vector<3>(pos_vec.data()));
+      gate->setRotation(
+        fli::Quaternion(quat_vec[0], quat_vec[1], quat_vec[2], quat_vec[3]));
+      gate->setSize(fli::Vector<3>(
         scale_vec.data()));  // for visualization, not the acutal physical size
 
       unity_gates_.push_back(gate);
       unity_bridge_->addStaticObject(gate);
 
       //
-      std::vector<flightlib::Scalar> start_pos_vec =
-        config_node["start_pos"].as<std::vector<flightlib::Scalar>>();
-      std::vector<flightlib::Scalar> goal_pos_vec =
-        config_node["goal_pos"].as<std::vector<flightlib::Scalar>>();
+      std::vector<fli::Scalar> start_pos_vec =
+        config_node["start_pos"].as<std::vector<fli::Scalar>>();
+      std::vector<fli::Scalar> goal_pos_vec =
+        config_node["goal_pos"].as<std::vector<fli::Scalar>>();
       start_pos_ << start_pos_vec[0], start_pos_vec[1], start_pos_vec[2];
       goal_pos_ << goal_pos_vec[0], goal_pos_vec[1], goal_pos_vec[2];
     }
