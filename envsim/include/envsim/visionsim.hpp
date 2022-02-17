@@ -25,15 +25,29 @@
 #include "agilib/utils/timer.hpp"
 #include "agiros/ros_pilot.hpp"
 
+// flightlib
+#include "flightlib/bridges/unity_bridge.hpp"
+#include "flightlib/common/command.hpp"
+#include "flightlib/common/logger.hpp"
+#include "flightlib/common/quad_state.hpp"
+#include "flightlib/common/types.hpp"
+#include "flightlib/common/utils.hpp"
+#include "flightlib/envs/env_base.hpp"
+#include "flightlib/objects/quadrotor.hpp"
+#include "flightlib/sensors/rgb_camera.hpp"
+
+// -- flightmare
+#include "flightlib/envs/vision_env/vision_env.hpp"
+
 
 namespace agi {
 
-class Environment {
+class VisionSim {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  Environment(const ros::NodeHandle& nh, const ros::NodeHandle& pnh);
-  Environment() : Environment(ros::NodeHandle(), ros::NodeHandle("~")) {}
-  ~Environment();
+  VisionSim(const ros::NodeHandle& nh, const ros::NodeHandle& pnh);
+  VisionSim() : VisionSim(ros::NodeHandle(), ros::NodeHandle("~")) {}
+  ~VisionSim();
 
  private:
   void resetCallback(const std_msgs::EmptyConstPtr& msg);
@@ -43,7 +57,6 @@ class Environment {
   void publishStates(const QuadState& state, const QuadState& delayed_state,
                      const QuadState& mockvio_state);
   void publishImages(const QuadState& state);
-
   void loadMockVIOParamsCallback(const std_msgs::StringConstPtr& msg);
 
   ros::NodeHandle nh_, pnh_;
@@ -69,7 +82,10 @@ class Environment {
   ros::WallTime t_start_;
 
   std::string param_directory_;
-  std::string camera_config_;
+
+  // flightmare vision environment
+  flightlib::VisionEnv vision_env_;
+  // flightlib::EnvBase env_;
 
   // -- Race tracks
   Vector<3> start_pos_;

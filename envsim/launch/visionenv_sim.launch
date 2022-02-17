@@ -3,7 +3,6 @@
     <arg name="quad_name" default="blackbird"/>
     <arg name="use_bem_propeller_model" default="False"/>
     <arg name="use_unity" default="False"/>
-    <arg name="debug" default="True"/>
     <arg name="render" default="False"/>
     <arg name="race_track" default="real_track"/>
     <arg name="save_data" default="false"/>
@@ -14,21 +13,19 @@
     <arg name="mock_vio_params_file" default="$(find agilib)/params/mock_vio.yaml"/>
 
     <group ns="$(arg quad_name)">
-        <node name="agiros_pilot" pkg="environment" type="environment_node" output="screen" launch-prefix="xterm -e gdb --args" if="$(arg debug)">
+        <node name="agiros_pilot" pkg="envsim" type="visionsim_node" output="screen">
             <param name="param_dir" value="$(find agilib)/params"/>
-            <param name="ros_param_dir" value="$(find environment)/parameters"/>
+            <param name="ros_param_dir" value="$(find envsim)/parameters"/>
             <param name="use_bem_propeller_model" value="$(arg use_bem_propeller_model)"/>
             <param name="pilot_config" value="simple_sim_pilot.yaml"/>
-            <param name="race_config" value="$(find environment)/parameters/tracks/$(arg race_track).yaml"/>
-            <param name="camera_config" value="$(find environment)/parameters/camera.yaml"/>
             <param name="real_time_factor" value="$(arg real_time_factor)"/>
             <param name="render" value="$(arg render)"/>
-        </node> 
+        </node>
     </group>
 
     <!-- Visualization -->
-    <!-- <node pkg="rviz" type="rviz" name="viz_face" args="-d $(find environment)/rviz/environment.rviz"
-          ns="$(arg quad_name)" if="$(arg rviz)"/> -->
+    <node pkg="rviz" type="rviz" name="viz_face" args="-d $(find envsim)/resources/rviz/racesim.rviz"
+          ns="$(arg quad_name)" if="$(arg rviz)"/>
 
     <!-- GUI -->
     <node name="agiros_gui" pkg="rqt_gui" type="rqt_gui"
@@ -40,7 +37,7 @@
     <!-- args="-batchmode"/> -->
 
     <!-- Data saving -->
-    <!-- <include file="$(find data_saver)/launch/data_saver.launch" if="$(arg save_data)">
+    <include file="$(find data_saver)/launch/data_saver.launch" if="$(arg save_data)">
         <arg name="quad_name" default="blackbird"/>
         <arg name="base_folder" default="/tmp/dagger_det_mock_vio/train_RL_80ms/"/>
         <arg name="odom_save_freq" default="50"/>
@@ -53,5 +50,5 @@
         <arg name="img_width" default="640"/>
         <arg name="img_height" default="480"/>
         <arg name="gate_labels_save_freq" default="10"/>
-    </include> -->
+    </include>
 </launch>

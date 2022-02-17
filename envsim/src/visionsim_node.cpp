@@ -1,32 +1,26 @@
 #include <ros/ros.h>
 
 #include "agiros_msgs/QuadState.h"
-#include "environment/environment.hpp"
-#include "flightlib/common/command.hpp"
+#include "envsim/visionsim.hpp"
 #include "nav_msgs/Odometry.h"
 #include "rosgraph_msgs/Clock.h"
 
-
 using namespace agi;
 
-Environment::Environment(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
+VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   : nh_(nh), pnh_(pnh) {
   bool use_bem = false;
   pnh_.getParam("use_bem_propeller_model", use_bem);
   pnh_.getParam("real_time_factor", real_time_factor_);
   pnh_.getParam("render", render_);
   pnh_.getParam("param_dir", param_directory_);
-  pnh_.getParam("camera_config", camera_config_);
-
-  std::cout << "Camera Config: " << camera_config_ << std::endl;
 
   // Logic subscribers
-  reset_sub_ =
-    pnh_.subscribe("reset_sim", 1, &Environment::resetCallback, this);
+  reset_sub_ = pnh_.subscribe("reset_sim", 1, &VisionSim::resetCallback, this);
   reload_quad_sub_ = pnh_.subscribe("reload_quadrotor", 1,
-                                    &Environment::loadQuadrotorCallback, this);
+                                    &VisionSim::loadQuadrotorCallback, this);
   reload_mockvio_sub_ = pnh_.subscribe(
-    "reload_mockvio", 1, &Environment::loadMockVIOParamsCallback, this);
+    "reload_mockvio", 1, &VisionSim::loadMockVIOParamsCallback, this);
 
   // Publishers
   clock_pub_ = nh_.advertise<rosgraph_msgs::Clock>("/clock", 1);
@@ -41,6 +35,10 @@ Environment::Environment(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   image_pub_ = it.advertise("unity/image", 1);
 
   ros_pilot_.getQuadrotor(&quad_);
+
+
+  std::cout << "Hellow world" << std::endl;
+  std::cout << vision_env_.getActDim() << std::endl;
 
   // hacky solution to pass the thrust map to the low level controller
   simulator_.setParamRoot(ros_pilot_.getPilot().getParams().directory_);
@@ -86,15 +84,15 @@ Environment::Environment(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
 
   t_start_ = ros::WallTime::now();
 
-  sim_thread_ = std::thread(&Environment::simLoop, this);
+  sim_thread_ = std::thread(&VisionSim::simLoop, this);
 }
 
-Environment::~Environment() {
+VisionSim::~VisionSim() {
   if (sim_thread_.joinable()) sim_thread_.join();
   if (render_thread_.joinable()) render_thread_.join();
 }
 
-void Environment::resetCallback(const std_msgs::EmptyConstPtr &msg) {
+void VisionSim::resetCallback(const std_msgs::EmptyConstPtr &msg) {
   ROS_INFO("Resetting simulator!");
   QuadState reset_state;
   {
@@ -112,7 +110,7 @@ void Environment::resetCallback(const std_msgs::EmptyConstPtr &msg) {
   }
 }
 
-void Environment::loadQuadrotorCallback(const std_msgs::StringConstPtr &msg) {
+void VisionSim::loadQuadrotorCallback(const std_msgs::StringConstPtr &msg) {
   // this changes the simulated quadrotor, the controllers or the pilot are not
   // aware of the change
   ROS_INFO("Reloading quadrotor from [%s]", msg->data.c_str());
@@ -135,7 +133,7 @@ void Environment::loadQuadrotorCallback(const std_msgs::StringConstPtr &msg) {
 }
 
 
-void Environment::simLoop() {
+void VisionSim::simLoop() {
   while (ros::ok()) {
     ros::WallTime t_start_sim = ros::WallTime::now();
     QuadState quad_state;
@@ -226,9 +224,9 @@ void Environment::simLoop() {
   }
 }
 
-void Environment::publishStates(const QuadState &state,
-                                const QuadState &delayed_state,
-                                const QuadState &mockvio_state) {
+void VisionSim::publishStates(const QuadState &state,
+                              const QuadState &delayed_state,
+                              const QuadState &mockvio_state) {
   agiros_msgs::QuadState msg_state;
   msg_state.header.frame_id = "world";
   msg_state.header.stamp = ros::Time(state.t);
@@ -274,158 +272,45 @@ void Environment::publishStates(const QuadState &state,
   mockvio_state_pub_.publish(mockvio_msg);
 }
 
-void Environment::publishImages(const QuadState &state) {
+void VisionSim::publishImages(const QuadState &state) {
   sensor_msgs::ImagePtr rgb_msg;
-  // render the frame
-  // fli::QuadState unity_quad_state;
-  // unity_quad_state.setZero();
-  // unity_quad_state.p = state.p.cast<fli::Scalar>();
-  // unity_quad_state.qx = state.qx.cast<fli::Scalar>();
-  // unity_quad_->setState(unity_quad_state);
-  // // Warning, delay
-  // unity_bridge_->getRender(frame_id_);
-  // unity_bridge_->handleOutput(frame_id_);
-  // cv::Mat img;
-  // unity_camera_->getRGBImage(img);
-  // rgb_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img).toImageMsg();
-  // rgb_msg->header.stamp = ros::Time(state.t);
-  // image_pub_.publish(rgb_msg);
+  //   frame_id_ += 1;
+  //   // render the frame
+  //   flightlib::QuadState unity_quad_state;
+  //   unity_quad_state.setZero();
+  //   unity_quad_state.p = state.p.cast<flightlib::Scalar>();
+  //   unity_quad_state.qx = state.qx.cast<flightlib::Scalar>();
+  //   unity_quad_->setState(unity_quad_state);
+  //   // Warning, delay
+  //   unity_bridge_->getRender(frame_id_);
+  //   unity_bridge_->handleOutput(frame_id_);
+  //   cv::Mat img;
+  //   unity_camera_->getRGBImage(img);
+  //   rgb_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8",
+  //   img).toImageMsg(); rgb_msg->header.stamp = ros::Time(state.t);
+  //   image_pub_.publish(rgb_msg);
+  // }
+
+  // bool VisionSim::setUnity(const bool render) {
+  //   unity_render_ = render;
+  //   if (unity_render_ && unity_bridge_ == nullptr) {
+  //     unity_bridge_ = flightlib::UnityBridge::getInstance();
+  //     unity_bridge_->addQuadrotor(unity_quad_);
+  //     //
+  //     if (!loadRacetrack(pnh_)) {
+  //       ROS_WARN("[%s] No race track is specified.",
+  //       pnh_.getNamespace().c_str());
+  //     } else {
+  //     };
+
+  //     ROS_INFO("[%s] Unity Bridge is created.", pnh_.getNamespace().c_str());
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
 }
 
-// void Environment::configUnityCamera() {
-//   std::string cfg_path = getenv("FLIGHTMARE_PATH") +
-//                          std::string("/flightpy/configs/control/config.yaml");
-//   // Flightmare Quadrotor and Unity Camera
-//   std::cout << "hello world 0" << std::endl;
-//   unity_quad_ = std::make_shared<fli::Quadrotor>(cfg_path);
-//   std::cout << "hello world 1" << std::endl;
-//   fli::Vector<3> quad_size(0.5, 0.5, 0.2);
-//   unity_quad_->setSize(quad_size);
-
-//   std::cout << "hello world 2" << std::endl;
-//   unity_camera_ = std::make_shared<fli::RGBCamera>();
-
-//   std::cout << "hello world 3" << std::endl;
-//   fli::Vector<3> B_r_BC(0.0, 0.0, 0.3);
-//   // rotational angle of the camera
-//   fli::Vector<3> roll_pitch_yaw(0.0, 0.0, -90.0);
-
-//   fli::Scalar hor_fov_radians = (M_PI * (110 / 180.0));
-//   //
-//   fli::Scalar width = 640.0;
-//   fli::Scalar height = 480.0;
-//   std::vector<bool> post_processing = {false, false, false};
-
-//   std::cout << "UNityquad" << std::endl;
-//   std::string camera_cfg_file;
-//   // load camera configurations
-//   if (!pnh_.getParam("camera_config", camera_cfg_file)) {
-//     ROS_WARN(
-//       "[%s] Could not load camera configuration. Using the default value",
-//       pnh_.getNamespace().c_str());
-//   } else {
-//     ROS_INFO("[%s] Loading camera configuration.",
-//     pnh_.getNamespace().c_str()); YAML::Node cfg =
-//     YAML::LoadFile(camera_cfg_file);
-
-//     std::vector<fli::Scalar> t_BC_vec =
-//       cfg["t_BC"].as<std::vector<fli::Scalar>>();
-//     std::vector<fli::Scalar> r_BC_vec =
-//       cfg["r_BC"].as<std::vector<fli::Scalar>>();
-
-//     //
-//     B_r_BC << t_BC_vec[0], t_BC_vec[1], t_BC_vec[2];
-//     roll_pitch_yaw << r_BC_vec[0], r_BC_vec[1], r_BC_vec[2];
-
-//     // FOV
-//     hor_fov_radians = (cfg["fov"].as<fli::Scalar>() * M_PI / 180.0);
-
-//     // depth, segmentation, opticalflow
-//     post_processing[0] = cfg["enable_depth"].as<bool>();
-//     post_processing[1] = cfg["enable_segmentation"].as<bool>();
-//     post_processing[2] = cfg["enable_opticalflow"].as<bool>();
-
-//     // width and height
-//     width = cfg["width"].as<fli::Scalar>();
-//     height = cfg["height"].as<fli::Scalar>();
-//   }
-
-//   fli::Matrix<3, 3> R_BC = (Eigen::AngleAxisd(roll_pitch_yaw[0] / 180.0 *
-//   M_PI,
-//                                               Eigen::Vector3d::UnitX()) *
-//                             Eigen::AngleAxisd(roll_pitch_yaw[1] / 180.0 *
-//                             M_PI,
-//                                               Eigen::Vector3d::UnitY()) *
-//                             Eigen::AngleAxisd(roll_pitch_yaw[2] / 180.0 *
-//                             M_PI,
-//                                               Eigen::Vector3d::UnitZ()))
-//                              .toRotationMatrix();
-
-//   // Recalculate here: https://themetalmuncher.github.io/fov-calc/;
-//   fli::Scalar vertical_fov =
-//     2. * std::atan(std::tan(hor_fov_radians / 2) * height / width);
-//   vertical_fov = (vertical_fov / M_PI) * 180.0;  // convert back to degrees
-
-//   std::cout << "Vertical FoV is " << vertical_fov << std::endl;
-//   unity_camera_->setFOV(vertical_fov);
-//   unity_camera_->setWidth(width);
-//   unity_camera_->setHeight(height);
-//   unity_camera_->setRelPose(B_r_BC, R_BC);
-//   unity_quad_->addRGBCamera(unity_camera_);
-// }
-
-// bool Environment::loadRacetrack() {
-//   std::string config_file;
-//   if (!nh.getParam("race_config", config_file)) {
-//     ROS_ERROR("[%s] Could not load race track configuration.",
-//               pnh_.getNamespace().c_str());
-//     return false;
-//   } else {
-//     ROS_INFO("[%s] Loading race track configuration.",
-//              pnh_.getNamespace().c_str());
-//     YAML::Node config_node = YAML::LoadFile(config_file);
-//     Scalar num_gate = config_node["gates"]["N"].as<Scalar>();
-//     for (size_t i = 0; i < num_gate; i++) {
-//       std::string gate_id = "Gate" + std::to_string(i + 1);
-//       std::string prefab_id = "rpg_gate";
-
-//       // load gate position, rotation, and scale
-//       std::vector<fli::Scalar> pos_vec =
-//         config_node["gates"][gate_id]["position"]
-//           .as<std::vector<fli::Scalar>>();
-//       std::vector<fli::Scalar> quat_vec =
-//         config_node["gates"][gate_id]["rotation"]
-//           .as<std::vector<fli::Scalar>>();
-//       std::vector<fli::Scalar> scale_vec =
-//         config_node["gates"][gate_id]["scale"].as<std::vector<fli::Scalar>>();
-
-//       // create gate
-//       std::shared_ptr<fli::StaticGate> gate =
-//         std::make_shared<fli::StaticGate>(gate_id, prefab_id);
-//       gate->setPosition(fli::Vector<3>(pos_vec.data()));
-//       gate->setRotation(
-//         fli::Quaternion(quat_vec[0], quat_vec[1], quat_vec[2], quat_vec[3]));
-//       gate->setSize(fli::Vector<3>(
-//         scale_vec.data()));  // for visualization, not the acutal physical
-//         size
-
-//       unity_gates_.push_back(gate);
-//       unity_bridge_->addStaticObject(gate);
-
-//       //
-//       std::vector<fli::Scalar> start_pos_vec =
-//         config_node["start_pos"].as<std::vector<fli::Scalar>>();
-//       std::vector<fli::Scalar> goal_pos_vec =
-//         config_node["goal_pos"].as<std::vector<fli::Scalar>>();
-//       start_pos_ << start_pos_vec[0], start_pos_vec[1], start_pos_vec[2];
-//       goal_pos_ << goal_pos_vec[0], goal_pos_vec[1], goal_pos_vec[2];
-//     }
-//     return true;
-//   }
-// }
-
-void Environment::loadMockVIOParamsCallback(
-  const std_msgs::StringConstPtr &msg) {
+void VisionSim::loadMockVIOParamsCallback(const std_msgs::StringConstPtr &msg) {
   ROS_INFO("Reloading MockVIO parameters from [%s]", msg->data.c_str());
   {
     const std::lock_guard<std::mutex> lock(mockvio_mutex_);
@@ -440,13 +325,10 @@ void Environment::loadMockVIOParamsCallback(
 }
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "environment_node");
+  ros::init(argc, argv, "visionsim_node");
 
-  Environment environment;
+  VisionSim vision_sim;
 
   ros::spin();
-  //    ros::MultiThreadedSpinner spinner(2);
-  //    spinner.spin();
-
   return 0;
 }

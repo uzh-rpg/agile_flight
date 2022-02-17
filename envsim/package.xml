@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>environment</name>
+  <name>envsim</name>
   <version>0.0.1</version>
-  <description>Simulation Environment For Vision-based Agile Flight</description>
+  <description>ROS-Wrapper for AgiLib</description>
 
-  <maintainer email="song@ifi.uzh.ch">song</maintainer>
+  <maintainer email="foehn@ifi.uzh.ch">foehnph</maintainer>
 
   <license>GNU GPL</license>
 
@@ -16,8 +16,10 @@
   <depend>roscpp</depend>
   <depend>rosgraph_msgs</depend>
 
-  <!-- Flightmare -->
-  <depend>flightlib</depend>
+
   <depend>cv_bridge</depend>
+  <depend>flightlib</depend>
   <depend>image_transport</depend>
+
+
 </package>
