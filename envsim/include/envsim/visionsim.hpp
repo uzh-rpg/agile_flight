@@ -9,6 +9,8 @@
 #include <image_transport/image_transport.h>
 #include <ros/ros.h>
 
+#include <filesystem>
+
 #include "std_msgs/String.h"
 
 // -- agilicious
@@ -33,11 +35,9 @@
 #include "flightlib/common/types.hpp"
 #include "flightlib/common/utils.hpp"
 #include "flightlib/envs/env_base.hpp"
+#include "flightlib/envs/vision_env/vision_env.hpp"
 #include "flightlib/objects/quadrotor.hpp"
 #include "flightlib/sensors/rgb_camera.hpp"
-
-// -- flightmare
-#include "flightlib/envs/vision_env/vision_env.hpp"
 
 
 namespace agi {
@@ -82,10 +82,10 @@ class VisionSim {
   ros::WallTime t_start_;
 
   std::string param_directory_;
+  std::string ros_param_directory_;
 
   // flightmare vision environment
   flightlib::VisionEnv vision_env_;
-  // flightlib::EnvBase env_;
 
   // -- Race tracks
   Vector<3> start_pos_;

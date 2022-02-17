@@ -14,6 +14,7 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   pnh_.getParam("real_time_factor", real_time_factor_);
   pnh_.getParam("render", render_);
   pnh_.getParam("param_dir", param_directory_);
+  pnh_.getParam("ros_param_dir", ros_param_directory_);
 
   // Logic subscribers
   reset_sub_ = pnh_.subscribe("reset_sim", 1, &VisionSim::resetCallback, this);
@@ -35,10 +36,6 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   image_pub_ = it.advertise("unity/image", 1);
 
   ros_pilot_.getQuadrotor(&quad_);
-
-
-  std::cout << "Hellow world" << std::endl;
-  std::cout << vision_env_.getActDim() << std::endl;
 
   // hacky solution to pass the thrust map to the low level controller
   simulator_.setParamRoot(ros_pilot_.getPilot().getParams().directory_);
@@ -85,6 +82,14 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   t_start_ = ros::WallTime::now();
 
   sim_thread_ = std::thread(&VisionSim::simLoop, this);
+
+  std::string camera_config = ros_param_directory_ + "/camera_config.yaml";
+  if (!(std::filesystem::exists(camera_config))) {
+    ROS_ERROR("Configuration file [%s] does not exists.",
+              camera_config.c_str());
+  }
+  YAML::Node cfg_node = YAML::LoadFile(camera_config);
+  vision_env_.configCamera(cfg_node);
 }
 
 VisionSim::~VisionSim() {
