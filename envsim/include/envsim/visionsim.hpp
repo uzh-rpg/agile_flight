@@ -86,6 +86,7 @@ class VisionSim {
 
   // flightmare vision environment
   flightlib::VisionEnv vision_env_;
+  flightlib::FrameID frame_id_;
 
   // -- Race tracks
   Vector<3> start_pos_;

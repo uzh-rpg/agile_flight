@@ -8,7 +8,7 @@
 using namespace agi;
 
 VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
-  : nh_(nh), pnh_(pnh) {
+  : nh_(nh), pnh_(pnh), frame_id_(0) {
   bool use_bem = false;
   pnh_.getParam("use_bem_propeller_model", use_bem);
   pnh_.getParam("real_time_factor", real_time_factor_);
@@ -83,13 +83,17 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
 
   sim_thread_ = std::thread(&VisionSim::simLoop, this);
 
-  std::string camera_config = ros_param_directory_ + "/camera_config.yaml";
-  if (!(std::filesystem::exists(camera_config))) {
-    ROS_ERROR("Configuration file [%s] does not exists.",
-              camera_config.c_str());
+  if (render_) {
+    std::string camera_config = ros_param_directory_ + "/camera_config.yaml";
+    if (!(std::filesystem::exists(camera_config))) {
+      ROS_ERROR("Configuration file [%s] does not exists.",
+                camera_config.c_str());
+    }
+    YAML::Node cfg_node = YAML::LoadFile(camera_config);
+    vision_env_.configCamera(cfg_node);
+    vision_env_.setUnity(render_);
+    vision_env_.connectUnity();
   }
-  YAML::Node cfg_node = YAML::LoadFile(camera_config);
-  vision_env_.configCamera(cfg_node);
 }
 
 VisionSim::~VisionSim() {
@@ -279,41 +283,26 @@ void VisionSim::publishStates(const QuadState &state,
 
 void VisionSim::publishImages(const QuadState &state) {
   sensor_msgs::ImagePtr rgb_msg;
-  //   frame_id_ += 1;
-  //   // render the frame
-  //   flightlib::QuadState unity_quad_state;
-  //   unity_quad_state.setZero();
-  //   unity_quad_state.p = state.p.cast<flightlib::Scalar>();
-  //   unity_quad_state.qx = state.qx.cast<flightlib::Scalar>();
-  //   unity_quad_->setState(unity_quad_state);
-  //   // Warning, delay
-  //   unity_bridge_->getRender(frame_id_);
-  //   unity_bridge_->handleOutput(frame_id_);
-  //   cv::Mat img;
-  //   unity_camera_->getRGBImage(img);
-  //   rgb_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8",
-  //   img).toImageMsg(); rgb_msg->header.stamp = ros::Time(state.t);
-  //   image_pub_.publish(rgb_msg);
-  // }
+  frame_id_ += 1;
+  // render the frame
+  flightlib::QuadState unity_quad_state;
+  unity_quad_state.setZero();
+  unity_quad_state.p = state.p.cast<flightlib::Scalar>();
+  unity_quad_state.qx = state.qx.cast<flightlib::Scalar>();
 
-  // bool VisionSim::setUnity(const bool render) {
-  //   unity_render_ = render;
-  //   if (unity_render_ && unity_bridge_ == nullptr) {
-  //     unity_bridge_ = flightlib::UnityBridge::getInstance();
-  //     unity_bridge_->addQuadrotor(unity_quad_);
-  //     //
-  //     if (!loadRacetrack(pnh_)) {
-  //       ROS_WARN("[%s] No race track is specified.",
-  //       pnh_.getNamespace().c_str());
-  //     } else {
-  //     };
+  std::shared_ptr<flightlib::Quadrotor> unity_quad = vision_env_.getQuadrotor();
+  unity_quad->setState(unity_quad_state);
 
-  //     ROS_INFO("[%s] Unity Bridge is created.", pnh_.getNamespace().c_str());
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
+  vision_env_.updateUnity(frame_id_);
+
+  // Warning, delay
+  cv::Mat img;
+  unity_quad->getCameras()[0]->getRGBImage(img);
+  rgb_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img).toImageMsg();
+  rgb_msg->header.stamp = ros::Time(state.t);
+  image_pub_.publish(rgb_msg);
 }
+
 
 void VisionSim::loadMockVIOParamsCallback(const std_msgs::StringConstPtr &msg) {
   ROS_INFO("Reloading MockVIO parameters from [%s]", msg->data.c_str());
