@@ -1,11 +1,15 @@
+unity:
+  scene_id: 0 # 0 warehouse, 1 garage, 3 natureforest
+  num_cam: 1  # monocular or stereo camera
+
 rgb_camera:
   on: yes
   t_BC: [0.0, 0.0, 0.3]
   r_BC: [0.0, 0.0, -90]
   channels: 3
-  width: 720
-  height: 480
+  width: 320
+  height: 240
   fov: 70.0
   enable_depth: yes
-  enable_segmentation: no
-  enable_opticalflow: no
+  enable_segmentation: yes 
+  enable_opticalflow: yes 

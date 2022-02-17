@@ -33,7 +33,11 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
     pnh_.advertise<agiros_msgs::QuadState>("mockvio/state", 1);
 
   image_transport::ImageTransport it(pnh_);
+
+  //
   image_pub_ = it.advertise("unity/image", 1);
+  depth_pub_ = it.advertise("unity/depth", 1);
+  opticalflow_pub_ = it.advertise("unity/opticalflow", 1);
 
   ros_pilot_.getQuadrotor(&quad_);
 
@@ -296,11 +300,28 @@ void VisionSim::publishImages(const QuadState &state) {
   vision_env_.updateUnity(frame_id_);
 
   // Warning, delay
-  cv::Mat img;
+  cv::Mat img, depth, of;
+
+  // RGB Image
   unity_quad->getCameras()[0]->getRGBImage(img);
   rgb_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img).toImageMsg();
   rgb_msg->header.stamp = ros::Time(state.t);
   image_pub_.publish(rgb_msg);
+
+
+  // Depth Image
+  unity_quad->getCameras()[0]->getDepthMap(depth);
+  sensor_msgs::ImagePtr depth_msg =
+    cv_bridge::CvImage(std_msgs::Header(), "32FC1", depth).toImageMsg();
+  depth_msg->header.stamp = ros::Time(state.t);
+  depth_pub_.publish(depth_msg);
+
+  // Optical Flow
+  unity_quad->getCameras()[0]->getOpticalFlow(of);
+  sensor_msgs::ImagePtr of_msg =
+    cv_bridge::CvImage(std_msgs::Header(), "bgr8", of).toImageMsg();
+  of_msg->header.stamp = ros::Time(state.t);
+  opticalflow_pub_.publish(of_msg);
 }
 
 

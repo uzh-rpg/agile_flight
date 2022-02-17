@@ -24,7 +24,7 @@
     </group>
 
     <!-- Visualization -->
-    <node pkg="rviz" type="rviz" name="viz_face" args="-d $(find envsim)/resources/rviz/racesim.rviz"
+    <node pkg="rviz" type="rviz" name="viz_face" args="-d $(find envsim)/resources/rviz/visionsim.rviz"
           ns="$(arg quad_name)" if="$(arg rviz)"/>
 
     <!-- GUI -->

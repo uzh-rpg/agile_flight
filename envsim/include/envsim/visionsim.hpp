@@ -68,7 +68,12 @@ class VisionSim {
   ros::Publisher delayed_state_pub_;
   ros::Publisher mockvio_state_pub_;
   ros::Publisher clock_pub_;
+
+  //
   image_transport::Publisher image_pub_;
+  image_transport::Publisher depth_pub_;
+  image_transport::Publisher opticalflow_pub_;
+
 
   Quadrotor quad_;
   QuadrotorSimulator simulator_;
