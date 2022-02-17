@@ -25,16 +25,6 @@
 #include "agilib/utils/timer.hpp"
 #include "agiros/ros_pilot.hpp"
 
-// -- flightmare
-#include "flightlib/bridges/unity_bridge.hpp"
-#include "flightlib/common/types.hpp"
-#include "flightlib/dynamics/quadrotor_dynamics.hpp"
-#include "flightlib/objects/quadrotor.hpp"
-#include "flightlib/objects/static_gate.hpp"
-#include "flightlib/sensors/rgb_camera.hpp"
-
-
-namespace fli = flightlib;
 
 namespace agi {
 
@@ -45,8 +35,6 @@ class Environment {
   Environment() : Environment(ros::NodeHandle(), ros::NodeHandle("~")) {}
   ~Environment();
 
-  void configUnityCamera();
-
  private:
   void resetCallback(const std_msgs::EmptyConstPtr& msg);
   void loadQuadrotorCallback(const std_msgs::StringConstPtr& msg);
@@ -56,10 +44,6 @@ class Environment {
                      const QuadState& mockvio_state);
   void publishImages(const QuadState& state);
 
-  bool setUnity(const bool render);
-  bool connectUnity();
-
-  bool loadRacetrack();
   void loadMockVIOParamsCallback(const std_msgs::StringConstPtr& msg);
 
   ros::NodeHandle nh_, pnh_;
@@ -84,16 +68,8 @@ class Environment {
   bool render_ = false;
   ros::WallTime t_start_;
 
-  // -- Flightmare Unity3D
-  std::shared_ptr<fli::Quadrotor> unity_quad_;
-  std::shared_ptr<fli::RGBCamera> unity_camera_;
-  std::vector<std::shared_ptr<fli::StaticGate>> unity_gates_;
-  std::shared_ptr<fli::UnityBridge> unity_bridge_;
-  fli::SceneID unity_scene_id_;
-  fli::RenderMessage_t unity_output_;
-  bool unity_ready_, unity_render_;
   std::string param_directory_;
-  fli::FrameID frame_id_ = 0;
+  std::string camera_config_;
 
   // -- Race tracks
   Vector<3> start_pos_;

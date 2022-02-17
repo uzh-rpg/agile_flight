@@ -2,25 +2,23 @@
 
 #include "agiros_msgs/QuadState.h"
 #include "environment/environment.hpp"
+#include "flightlib/common/command.hpp"
 #include "nav_msgs/Odometry.h"
 #include "rosgraph_msgs/Clock.h"
 
 
-namespace fli = flightlib;
-
 using namespace agi;
 
 Environment::Environment(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
-  : nh_(nh),
-    pnh_(pnh),
-    unity_scene_id_(fli::UnityScene::WAREHOUSE),
-    unity_ready_(false),
-    unity_render_(true) {
+  : nh_(nh), pnh_(pnh) {
   bool use_bem = false;
   pnh_.getParam("use_bem_propeller_model", use_bem);
   pnh_.getParam("real_time_factor", real_time_factor_);
   pnh_.getParam("render", render_);
   pnh_.getParam("param_dir", param_directory_);
+  pnh_.getParam("camera_config", camera_config_);
+
+  std::cout << "Camera Config: " << camera_config_ << std::endl;
 
   // Logic subscribers
   reset_sub_ =
@@ -73,16 +71,6 @@ Environment::Environment(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   simulator_.addModel(ModelRigidBody{quad_});
 
   QuadState quad_state;
-
-  if (render_) {
-    // Connect Unity
-    ROS_INFO(
-      "Rendering is enabled. Configuring Unity camera and connecting to "
-      "Unity.");
-    configUnityCamera();
-    setUnity(unity_render_);
-    connectUnity();
-  }
 
   // mock VIO stuff
   delayed_estimate_params_ = std::make_shared<MockVioParams>();
@@ -288,125 +276,103 @@ void Environment::publishStates(const QuadState &state,
 
 void Environment::publishImages(const QuadState &state) {
   sensor_msgs::ImagePtr rgb_msg;
-  frame_id_ += 1;
   // render the frame
-  fli::QuadState unity_quad_state;
-  unity_quad_state.setZero();
-  unity_quad_state.p = state.p.cast<fli::Scalar>();
-  unity_quad_state.qx = state.qx.cast<fli::Scalar>();
-  unity_quad_->setState(unity_quad_state);
-  // Warning, delay
-  unity_bridge_->getRender(frame_id_);
-  unity_bridge_->handleOutput(frame_id_);
-  cv::Mat img;
-  unity_camera_->getRGBImage(img);
-  rgb_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img).toImageMsg();
-  rgb_msg->header.stamp = ros::Time(state.t);
-  image_pub_.publish(rgb_msg);
+  // fli::QuadState unity_quad_state;
+  // unity_quad_state.setZero();
+  // unity_quad_state.p = state.p.cast<fli::Scalar>();
+  // unity_quad_state.qx = state.qx.cast<fli::Scalar>();
+  // unity_quad_->setState(unity_quad_state);
+  // // Warning, delay
+  // unity_bridge_->getRender(frame_id_);
+  // unity_bridge_->handleOutput(frame_id_);
+  // cv::Mat img;
+  // unity_camera_->getRGBImage(img);
+  // rgb_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img).toImageMsg();
+  // rgb_msg->header.stamp = ros::Time(state.t);
+  // image_pub_.publish(rgb_msg);
 }
 
-bool Environment::setUnity(const bool render) {
-  unity_render_ = render;
-  if (unity_render_ && unity_bridge_ == nullptr) {
-    unity_bridge_ = fli::UnityBridge::getInstance();
-    unity_bridge_->addQuadrotor(unity_quad_);
-    //
-    // if (!loadRacetrack()) {
-    //   ROS_WARN("[%s] No race track is specified.",
-    //   pnh_.getNamespace().c_str());
-    // } else {
-    // };
+// void Environment::configUnityCamera() {
+//   std::string cfg_path = getenv("FLIGHTMARE_PATH") +
+//                          std::string("/flightpy/configs/control/config.yaml");
+//   // Flightmare Quadrotor and Unity Camera
+//   std::cout << "hello world 0" << std::endl;
+//   unity_quad_ = std::make_shared<fli::Quadrotor>(cfg_path);
+//   std::cout << "hello world 1" << std::endl;
+//   fli::Vector<3> quad_size(0.5, 0.5, 0.2);
+//   unity_quad_->setSize(quad_size);
 
-    ROS_INFO("[%s] Unity Bridge is created.", pnh_.getNamespace().c_str());
-    return true;
-  } else {
-    return false;
-  }
-}
+//   std::cout << "hello world 2" << std::endl;
+//   unity_camera_ = std::make_shared<fli::RGBCamera>();
 
-bool Environment::connectUnity() {
-  if (!unity_render_ || unity_bridge_ == nullptr) return false;
-  unity_ready_ = unity_bridge_->connectUnity(unity_scene_id_);
-  return unity_ready_;
-}
+//   std::cout << "hello world 3" << std::endl;
+//   fli::Vector<3> B_r_BC(0.0, 0.0, 0.3);
+//   // rotational angle of the camera
+//   fli::Vector<3> roll_pitch_yaw(0.0, 0.0, -90.0);
 
-void Environment::configUnityCamera() {
-  std::string cfg_path = getenv("FLIGHTMARE_PATH") +
-                         std::string("/flightpy/configs/control/config.yaml");
-  // Flightmare Quadrotor and Unity Camera
-  std::cout << "hello world 0" << std::endl;
-  unity_quad_ = std::make_shared<fli::Quadrotor>(cfg_path);
-  std::cout << "hello world 1" << std::endl;
-  fli::Vector<3> quad_size(0.5, 0.5, 0.2);
-  unity_quad_->setSize(quad_size);
+//   fli::Scalar hor_fov_radians = (M_PI * (110 / 180.0));
+//   //
+//   fli::Scalar width = 640.0;
+//   fli::Scalar height = 480.0;
+//   std::vector<bool> post_processing = {false, false, false};
 
-  std::cout << "hello world 2" << std::endl;
-  // unity_camera_ = std::make_shared<fli::RGBCamera>();
+//   std::cout << "UNityquad" << std::endl;
+//   std::string camera_cfg_file;
+//   // load camera configurations
+//   if (!pnh_.getParam("camera_config", camera_cfg_file)) {
+//     ROS_WARN(
+//       "[%s] Could not load camera configuration. Using the default value",
+//       pnh_.getNamespace().c_str());
+//   } else {
+//     ROS_INFO("[%s] Loading camera configuration.",
+//     pnh_.getNamespace().c_str()); YAML::Node cfg =
+//     YAML::LoadFile(camera_cfg_file);
 
-  std::cout << "hello world 3" << std::endl;
-  fli::Vector<3> B_r_BC(0.0, 0.0, 0.3);
-  // rotational angle of the camera
-  fli::Vector<3> roll_pitch_yaw(0.0, 0.0, -90.0);
+//     std::vector<fli::Scalar> t_BC_vec =
+//       cfg["t_BC"].as<std::vector<fli::Scalar>>();
+//     std::vector<fli::Scalar> r_BC_vec =
+//       cfg["r_BC"].as<std::vector<fli::Scalar>>();
 
-  fli::Scalar hor_fov_radians = (M_PI * (110 / 180.0));
-  //
-  fli::Scalar width = 640.0;
-  fli::Scalar height = 480.0;
-  std::vector<bool> post_processing = {false, false, false};
+//     //
+//     B_r_BC << t_BC_vec[0], t_BC_vec[1], t_BC_vec[2];
+//     roll_pitch_yaw << r_BC_vec[0], r_BC_vec[1], r_BC_vec[2];
 
-  std::cout << "UNityquad" << std::endl;
-  std::string camera_cfg_file;
-  // load camera configurations
-  if (!pnh_.getParam("camera_config", camera_cfg_file)) {
-    ROS_WARN(
-      "[%s] Could not load camera configuration. Using the default value",
-      pnh_.getNamespace().c_str());
-  } else {
-    ROS_INFO("[%s] Loading camera configuration.", pnh_.getNamespace().c_str());
-    YAML::Node cfg = YAML::LoadFile(camera_cfg_file);
+//     // FOV
+//     hor_fov_radians = (cfg["fov"].as<fli::Scalar>() * M_PI / 180.0);
 
-    std::vector<fli::Scalar> t_BC_vec =
-      cfg["t_BC"].as<std::vector<fli::Scalar>>();
-    std::vector<fli::Scalar> r_BC_vec =
-      cfg["r_BC"].as<std::vector<fli::Scalar>>();
+//     // depth, segmentation, opticalflow
+//     post_processing[0] = cfg["enable_depth"].as<bool>();
+//     post_processing[1] = cfg["enable_segmentation"].as<bool>();
+//     post_processing[2] = cfg["enable_opticalflow"].as<bool>();
 
-    //
-    B_r_BC << t_BC_vec[0], t_BC_vec[1], t_BC_vec[2];
-    roll_pitch_yaw << r_BC_vec[0], r_BC_vec[1], r_BC_vec[2];
+//     // width and height
+//     width = cfg["width"].as<fli::Scalar>();
+//     height = cfg["height"].as<fli::Scalar>();
+//   }
 
-    // FOV
-    hor_fov_radians = (cfg["fov"].as<fli::Scalar>() * M_PI / 180.0);
+//   fli::Matrix<3, 3> R_BC = (Eigen::AngleAxisd(roll_pitch_yaw[0] / 180.0 *
+//   M_PI,
+//                                               Eigen::Vector3d::UnitX()) *
+//                             Eigen::AngleAxisd(roll_pitch_yaw[1] / 180.0 *
+//                             M_PI,
+//                                               Eigen::Vector3d::UnitY()) *
+//                             Eigen::AngleAxisd(roll_pitch_yaw[2] / 180.0 *
+//                             M_PI,
+//                                               Eigen::Vector3d::UnitZ()))
+//                              .toRotationMatrix();
 
-    // depth, segmentation, opticalflow
-    post_processing[0] = cfg["enable_depth"].as<bool>();
-    post_processing[1] = cfg["enable_segmentation"].as<bool>();
-    post_processing[2] = cfg["enable_opticalflow"].as<bool>();
+//   // Recalculate here: https://themetalmuncher.github.io/fov-calc/;
+//   fli::Scalar vertical_fov =
+//     2. * std::atan(std::tan(hor_fov_radians / 2) * height / width);
+//   vertical_fov = (vertical_fov / M_PI) * 180.0;  // convert back to degrees
 
-    // width and height
-    width = cfg["width"].as<fli::Scalar>();
-    height = cfg["height"].as<fli::Scalar>();
-  }
-
-  fli::Matrix<3, 3> R_BC = (Eigen::AngleAxisd(roll_pitch_yaw[0] / 180.0 * M_PI,
-                                              Eigen::Vector3d::UnitX()) *
-                            Eigen::AngleAxisd(roll_pitch_yaw[1] / 180.0 * M_PI,
-                                              Eigen::Vector3d::UnitY()) *
-                            Eigen::AngleAxisd(roll_pitch_yaw[2] / 180.0 * M_PI,
-                                              Eigen::Vector3d::UnitZ()))
-                             .toRotationMatrix();
-
-  // Recalculate here: https://themetalmuncher.github.io/fov-calc/;
-  fli::Scalar vertical_fov =
-    2. * std::atan(std::tan(hor_fov_radians / 2) * height / width);
-  vertical_fov = (vertical_fov / M_PI) * 180.0;  // convert back to degrees
-
-  std::cout << "Vertical FoV is " << vertical_fov << std::endl;
-  unity_camera_->setFOV(vertical_fov);
-  unity_camera_->setWidth(width);
-  unity_camera_->setHeight(height);
-  unity_camera_->setRelPose(B_r_BC, R_BC);
-  unity_quad_->addRGBCamera(unity_camera_);
-}
+//   std::cout << "Vertical FoV is " << vertical_fov << std::endl;
+//   unity_camera_->setFOV(vertical_fov);
+//   unity_camera_->setWidth(width);
+//   unity_camera_->setHeight(height);
+//   unity_camera_->setRelPose(B_r_BC, R_BC);
+//   unity_quad_->addRGBCamera(unity_camera_);
+// }
 
 // bool Environment::loadRacetrack() {
 //   std::string config_file;
