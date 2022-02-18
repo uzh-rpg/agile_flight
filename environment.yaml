@@ -1,4 +1,4 @@
-name: pubflight
+name: agileflight
 channels:
   - conda-forge
   - pytorch

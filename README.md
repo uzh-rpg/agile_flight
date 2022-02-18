@@ -4,7 +4,7 @@ Agile Flight is a super awesome research project developed by researchers from R
 The goal is to build and benchmark autonomous algorithms for vision-based agile flight.
 
 
-# Installation with ROS
+## Installation with ROS
 
 Run the `setup_ros.bash` in the main folder of this repository, it will ask for sudo permissions.
 
@@ -13,7 +13,7 @@ cd agile_flight
 ./setup_ros.bash
 ```
 
-# Installation with Python 
+## Installation with Python 
 Run the `setup_py.bash` in the main folder of this repository, it will ask for sudo permissions.
 
 ```bash
@@ -21,13 +21,13 @@ git clone git@github.com:uzh-rpg/agile_flight.git
 cd agile_flight 
 ./setup_py.bash
 ```
-# Usage with ROS
+## Usage with ROS
 Start the simulation:
 ```
 roslaunch envsim visionenv_sim.launch render:=True use_unity:=True
 ```
 
-# Usage with Python 
+## Usage with Python 
 Start the simulation:
 ```
 python3 -m envpy.run_vision_demo --render 1
