@@ -110,6 +110,7 @@ dependencies:
   - zlib=1.2.11=h7b6447c_3
   - zstd=1.4.9=haebb681_0
   - pip:
+    - stable-baselines3==1.4.0
     - absl-py==1.0.0
     - astroid==2.9.0
     - astunparse==1.6.3
