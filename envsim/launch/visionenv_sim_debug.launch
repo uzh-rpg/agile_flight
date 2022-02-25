@@ -2,9 +2,7 @@
 <launch>
     <arg name="quad_name" default="blackbird"/>
     <arg name="use_bem_propeller_model" default="False"/>
-    <arg name="use_unity" default="False"/>
     <arg name="render" default="False"/>
-    <arg name="save_data" default="false"/>
     <param name="/use_sim_time" value="True"/>
     <arg name="real_time_factor" value="1.0"/>
     <arg name="gui" default="True"/>
@@ -33,22 +31,7 @@
           if="$(arg gui)"/>
 
     <!-- Flightmare Standalone -->
-    <node name="flight_render" pkg="flightrender" type="RPG_Flightmare.x86_64" if="$(arg use_unity)"/>
+    <node name="flight_render" pkg="flightrender" type="RPG_Flightmare.x86_64" if="$(arg render)"/>
     <!-- args="-batchmode"/> -->
 
-    <!-- Data saving -->
-    <include file="$(find data_saver)/launch/data_saver.launch" if="$(arg save_data)">
-        <arg name="quad_name" default="blackbird"/>
-        <arg name="base_folder" default="/tmp/dagger_det_mock_vio/train_RL_80ms/"/>
-        <arg name="odom_save_freq" default="50"/>
-        <arg name="gate_det_save_freq" default="20"/>
-        <arg name="gt_command_save_freq" default="50"/>
-        <arg name="save_imgs" default="False"/>
-        <arg name="save_detector_labels" default="False"/>
-        <arg name="pitch_angle" default="0"/>
-        <arg name="horizontal_fov" default="110"/>
-        <arg name="img_width" default="640"/>
-        <arg name="img_height" default="480"/>
-        <arg name="gate_labels_save_freq" default="10"/>
-    </include>
 </launch>

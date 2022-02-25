@@ -1,23 +1,24 @@
-estimator_type:         "Feedthrough" #"MockVIO"
-estimator_params:       "feedthrough_params.yaml"
+pipeline:
+  estimator:
+    type:               "Feedthrough"
+    file:               "feedthrough.yaml"
 
-sampler_type:           "Time"
-# sampler_params:         "sampler.yaml"
+  sampler:
+    type:               "Time"
 
-#controller_type:        "MPC"
-#controller_params:      "mpc.yaml"
-controller_type:        "GEO"
-controller_params:      "geo_guard.yaml"
+  controller:
+    type:               "MPC"
+    file:               "mpc.yaml"
 
-bridge_type:            "ROS"
+  bridge:
+    type:               "ROS"
 
-traj_type:              "poly_min_snap"
-
-quadrotor:              "blackbird.yaml"
+quadrotor:              "kingfisher.yaml"
 
 dt_min:                 0.01
-dt_telemetry:           0.02     # Publish telemetry messages with this period (used for GUI)
+dt_telemetry:           0.02  # Publish telemetry messages with this period (used for GUI and IMU)
 
+traj_type:              "poly_min_snap"
 velocity_in_bodyframe:  false
 takeoff_height:         1.0   # target takeoff height
 takeoff_threshold:      0.5   # height under which takeoff is performed
@@ -33,5 +34,8 @@ sphere_size: 0.15                     # size of spheres that differentiate betwe
 #publishing of logged variables:
 pub_log_var: false
 
-# safety pipeline params
-guard_type:                    "None"
+## safety pipeline params
+#guard:
+#  type:               "None"
+
+

@@ -13,24 +13,18 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   pnh_.getParam("use_bem_propeller_model", use_bem);
   pnh_.getParam("real_time_factor", real_time_factor_);
   pnh_.getParam("render", render_);
-  pnh_.getParam("param_dir", param_directory_);
+  pnh_.getParam("agi_param_dir", agi_param_directory_);
   pnh_.getParam("ros_param_dir", ros_param_directory_);
 
   // Logic subscribers
   reset_sub_ = pnh_.subscribe("reset_sim", 1, &VisionSim::resetCallback, this);
   reload_quad_sub_ = pnh_.subscribe("reload_quadrotor", 1,
                                     &VisionSim::loadQuadrotorCallback, this);
-  reload_mockvio_sub_ = pnh_.subscribe(
-    "reload_mockvio", 1, &VisionSim::loadMockVIOParamsCallback, this);
 
   // Publishers
   clock_pub_ = nh_.advertise<rosgraph_msgs::Clock>("/clock", 1);
   odometry_pub_ = pnh_.advertise<nav_msgs::Odometry>("groundtruth/odometry", 1);
   state_pub_ = pnh_.advertise<agiros_msgs::QuadState>("groundtruth/state", 1);
-  delayed_state_pub_ =
-    pnh_.advertise<agiros_msgs::QuadState>("groundtruth_bf_vel/state", 1);
-  mockvio_state_pub_ =
-    pnh_.advertise<agiros_msgs::QuadState>("mockvio/state", 1);
 
   image_transport::ImageTransport it(pnh_);
 
@@ -42,7 +36,7 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   ros_pilot_.getQuadrotor(&quad_);
 
   // hacky solution to pass the thrust map to the low level controller
-  simulator_.setParamRoot(ros_pilot_.getPilot().getParams().directory_);
+//  simulator_.setParamRoot(ros_pilot_.getPilot().getParams().directory_);
 
   // Build simulation pipeline with simple model
   simulator_.updateQuad(quad_);
@@ -65,23 +59,10 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   } else {
     std::cout << "Not using BEM to model thrust" << std::endl;
     simulator_.addModel(ModelThrustTorqueSimple{quad_});
-    simulator_.addModel(ModelDrag{quad_});
   }
   simulator_.addModel(ModelRigidBody{quad_});
 
   QuadState quad_state;
-
-  // mock VIO stuff
-  delayed_estimate_params_ = std::make_shared<MockVioParams>();
-  delayed_estimate_params_->bodyframe_vel = true;
-  delayed_estimate_params_->latency = 0.0;  // TODO: parameterize
-  delayed_estimate_ =
-    std::make_shared<MockVio>(quad_, delayed_estimate_params_);
-
-  mock_vio_params_ = std::make_shared<MockVioParams>();
-  std::string mock_vio_param_file = param_directory_ + "/mock_vio.yaml";
-  mock_vio_params_->load(mock_vio_param_file);
-  mock_vio_ = std::make_shared<MockVio>(quad_, mock_vio_params_);
 
   t_start_ = ros::WallTime::now();
 
@@ -116,11 +97,6 @@ void VisionSim::resetCallback(const std_msgs::EmptyConstPtr &msg) {
   }
 
   reset_state.t += t_start_.toSec();
-  {
-    const std::lock_guard<std::mutex> lock(mockvio_mutex_);
-    delayed_estimate_->reset(reset_state);
-    mock_vio_->reset(reset_state);
-  }
 }
 
 void VisionSim::loadQuadrotorCallback(const std_msgs::StringConstPtr &msg) {
@@ -166,43 +142,21 @@ void VisionSim::simLoop() {
     // sleep for 1ms
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
-    // feed mock vio estimates to the pilot
-    QuadState delayed_state, mock_vio_state;
-    delayed_state.setZero();
-    mock_vio_state.setZero();
-    {
-      const std::lock_guard<std::mutex> lock(mockvio_mutex_);
-      if (!delayed_estimate_->addState(quad_state)) {
-        ROS_WARN("Could not add state at %1.6g\n", quad_state.t);
-      }
-      if (!delayed_estimate_->getAt(quad_state.t, &delayed_state)) {
-        ROS_WARN("Could not get state at %1.6g\n", quad_state.t);
-      }
+    publishState(quad_state);
 
-      if (!mock_vio_->addState(quad_state)) {
-        ROS_WARN("Could not add state at %1.6g\n", quad_state.t);
-      }
-      if (!mock_vio_->getAt(quad_state.t, &mock_vio_state)) {
-        ROS_WARN("Could not get state at %1.6g\n", quad_state.t);
-      }
-    }
-    publishStates(quad_state, delayed_state, mock_vio_state);
-
-    // if we want that MPC also operates on the mockvio estimates, toggle the
-    // lines below
     ros_pilot_.getPilot().odometryCallback(quad_state);
-    //    ros_pilot_.getPilot().odometryCallback(mock_vio_state);
 
     Command cmd = ros_pilot_.getCommand();
     // investigate the round trip time from the cmd timestamp
     //    ROS_INFO("Cmd delay: %.3f", quad_state.t - cmd.t);
     cmd.t -= t_start_.toSec();
-    if (ros_pilot_.feedthroughActive()) {
-      // we only add delay to this command type, otherwise MPC fails
-      cmd.t += 0.04;  // TODO: parameterize
-      //      ROS_INFO("Cmd delay: %.3f", quad_state.t - t_start_.toSec() -
-      //      cmd.t);
-    }
+    //    if (ros_pilot_.feedthroughActive()) {
+    //      // we only add delay to this command type, otherwise MPC fails
+    //      cmd.t += 0.04;  // TODO: parameterize
+    //      //      ROS_INFO("Cmd delay: %.3f", quad_state.t - t_start_.toSec()
+    //      -
+    //      //      cmd.t);
+    //    }
     if (cmd.valid()) {
       {
         const std::lock_guard<std::mutex> lock(sim_mutex_);
@@ -237,9 +191,7 @@ void VisionSim::simLoop() {
   }
 }
 
-void VisionSim::publishStates(const QuadState &state,
-                              const QuadState &delayed_state,
-                              const QuadState &mockvio_state) {
+void VisionSim::publishState(const QuadState &state) {
   agiros_msgs::QuadState msg_state;
   msg_state.header.frame_id = "world";
   msg_state.header.stamp = ros::Time(state.t);
@@ -251,28 +203,6 @@ void VisionSim::publishStates(const QuadState &state,
   msg_state.acceleration.linear = toRosVector(state.a);
   msg_state.acceleration.angular = toRosVector(state.tau);
 
-  agiros_msgs::QuadState msg_delayed_state;
-  msg_delayed_state.header.frame_id = "world";
-  msg_delayed_state.header.stamp = ros::Time(delayed_state.t);
-  msg_delayed_state.t = delayed_state.t;
-  msg_delayed_state.pose.position = toRosPoint(delayed_state.p);
-  msg_delayed_state.pose.orientation = toRosQuaternion(delayed_state.q());
-  msg_delayed_state.velocity.linear = toRosVector(delayed_state.v);
-  msg_delayed_state.velocity.angular = toRosVector(delayed_state.w);
-  msg_delayed_state.acceleration.linear = toRosVector(delayed_state.a);
-  msg_delayed_state.acceleration.angular = toRosVector(delayed_state.tau);
-
-  agiros_msgs::QuadState mockvio_msg;
-  mockvio_msg.header.frame_id = "world";
-  mockvio_msg.header.stamp = ros::Time(mockvio_state.t);
-  mockvio_msg.t = mockvio_state.t;
-  mockvio_msg.pose.position = toRosPoint(mockvio_state.p);
-  mockvio_msg.pose.orientation = toRosQuaternion(mockvio_state.q());
-  mockvio_msg.velocity.linear = toRosVector(mockvio_state.v);
-  mockvio_msg.velocity.angular = toRosVector(mockvio_state.w);
-  mockvio_msg.acceleration.linear = toRosVector(mockvio_state.a);
-  mockvio_msg.acceleration.angular = toRosVector(mockvio_state.tau);
-
   nav_msgs::Odometry msg_odo;
   msg_odo.header.frame_id = "world";
   msg_odo.header.stamp = ros::Time(state.t);
@@ -281,8 +211,6 @@ void VisionSim::publishStates(const QuadState &state,
 
   odometry_pub_.publish(msg_odo);
   state_pub_.publish(msg_state);
-  delayed_state_pub_.publish(msg_delayed_state);
-  mockvio_state_pub_.publish(mockvio_msg);
 }
 
 void VisionSim::publishImages(const QuadState &state) {
@@ -324,20 +252,6 @@ void VisionSim::publishImages(const QuadState &state) {
   opticalflow_pub_.publish(of_msg);
 }
 
-
-void VisionSim::loadMockVIOParamsCallback(const std_msgs::StringConstPtr &msg) {
-  ROS_INFO("Reloading MockVIO parameters from [%s]", msg->data.c_str());
-  {
-    const std::lock_guard<std::mutex> lock(mockvio_mutex_);
-    mock_vio_params_ = std::make_shared<MockVioParams>();
-    if (!mock_vio_params_->load(msg->data)) {
-      ROS_FATAL("Could not load MockVIO parameters.");
-      ros::shutdown();
-      return;
-    }
-    mock_vio_ = std::make_shared<MockVio>(quad_, mock_vio_params_);
-  }
-}
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "visionsim_node");

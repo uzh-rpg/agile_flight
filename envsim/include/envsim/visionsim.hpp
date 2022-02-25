@@ -15,9 +15,7 @@
 
 // -- agilicious
 #include "agilib/base/parameter_base.hpp"
-#include "agilib/estimator/mock_vio/mock_vio.hpp"
 #include "agilib/simulator/model_body_drag.hpp"
-#include "agilib/simulator/model_drag.hpp"
 #include "agilib/simulator/model_init.hpp"
 #include "agilib/simulator/model_motor.hpp"
 #include "agilib/simulator/model_propeller_bem.hpp"
@@ -54,10 +52,8 @@ class VisionSim {
   void loadQuadrotorCallback(const std_msgs::StringConstPtr& msg);
 
   void simLoop();
-  void publishStates(const QuadState& state, const QuadState& delayed_state,
-                     const QuadState& mockvio_state);
+  void publishState(const QuadState& state);
   void publishImages(const QuadState& state);
-  void loadMockVIOParamsCallback(const std_msgs::StringConstPtr& msg);
 
   ros::NodeHandle nh_, pnh_;
   ros::Subscriber reset_sub_;
@@ -86,7 +82,7 @@ class VisionSim {
   bool render_ = false;
   ros::WallTime t_start_;
 
-  std::string param_directory_;
+  std::string agi_param_directory_;
   std::string ros_param_directory_;
 
   // flightmare vision environment
@@ -98,15 +94,8 @@ class VisionSim {
   Vector<3> goal_pos_;
 
   std::mutex sim_mutex_;
-  std::mutex mockvio_mutex_;
   std::thread sim_thread_;
   std::thread render_thread_;
-
-  // Mock VIO stuff
-  std::shared_ptr<MockVio> mock_vio_;
-  std::shared_ptr<MockVioParams> mock_vio_params_;
-  std::shared_ptr<MockVio> delayed_estimate_;
-  std::shared_ptr<MockVioParams> delayed_estimate_params_;
 };
 
 }  // namespace agi
