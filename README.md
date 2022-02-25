@@ -12,6 +12,7 @@ TODO
 
 cd PATH_TO_YOUR_CATKIN_WS/src
 git clone git@github.com:uzh-rpg/agile_flight.git
+cd agile_flight
 ```
 
 Run the `setup_ros.bash` in the main folder of this repository, it will ask for sudo permissions.
