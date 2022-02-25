@@ -82,7 +82,7 @@ class VisionSim {
   bool render_ = false;
   ros::WallTime t_start_;
 
-  std::string param_directory_;
+  std::string agi_param_directory_;
   std::string ros_param_directory_;
 
   // flightmare vision environment

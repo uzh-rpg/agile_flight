@@ -13,7 +13,7 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   pnh_.getParam("use_bem_propeller_model", use_bem);
   pnh_.getParam("real_time_factor", real_time_factor_);
   pnh_.getParam("render", render_);
-  pnh_.getParam("param_dir", param_directory_);
+  pnh_.getParam("agi_param_dir", agi_param_directory_);
   pnh_.getParam("ros_param_dir", ros_param_directory_);
 
   // Logic subscribers
