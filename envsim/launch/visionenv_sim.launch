@@ -10,7 +10,7 @@
 
     <group ns="$(arg quad_name)">
         <node name="agiros_pilot" pkg="envsim" type="visionsim_node" output="screen">
-            <param name="param_dir" value="$(find agilib)/params"/>
+            <param name="agi_param_dir" value="$(find agilib)/params"/>
             <param name="ros_param_dir" value="$(find envsim)/parameters"/>
             <param name="use_bem_propeller_model" value="$(arg use_bem_propeller_model)"/>
             <param name="pilot_config" value="simple_sim_pilot.yaml"/>
