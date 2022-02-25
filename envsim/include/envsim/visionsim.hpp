@@ -35,6 +35,7 @@
 #include "flightlib/envs/env_base.hpp"
 #include "flightlib/envs/vision_env/vision_env.hpp"
 #include "flightlib/objects/quadrotor.hpp"
+#include "flightlib/objects/static_object.hpp"
 #include "flightlib/sensors/rgb_camera.hpp"
 
 

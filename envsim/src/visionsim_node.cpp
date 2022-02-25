@@ -36,7 +36,7 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   ros_pilot_.getQuadrotor(&quad_);
 
   // hacky solution to pass the thrust map to the low level controller
-//  simulator_.setParamRoot(ros_pilot_.getPilot().getParams().directory_);
+  // simulator_.setParamRoot(ros_pilot_.getPilot().getParams().directory_);
 
   // Build simulation pipeline with simple model
   simulator_.updateQuad(quad_);
@@ -224,6 +224,14 @@ void VisionSim::publishImages(const QuadState &state) {
 
   std::shared_ptr<flightlib::Quadrotor> unity_quad = vision_env_.getQuadrotor();
   unity_quad->setState(unity_quad_state);
+
+
+  std::vector<std::shared_ptr<flightlib::StaticObject>> static_objects =
+    vision_env_.getObjects();
+  for (int i = 0; i < int(static_objects.size()); i++) {
+    Vector<3> obj_position = unity_quad_state.p + Vector<3>(i, 0, 0);
+    static_objects[i]->setPosition(obj_position);
+  }
 
   vision_env_.updateUnity(frame_id_);
 
