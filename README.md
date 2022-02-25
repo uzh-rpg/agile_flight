@@ -19,6 +19,8 @@ Run the `setup_ros.bash` in the main folder of this repository, it will ask for 
 
 ```bash
 ./setup_ros.bash
+
+catkin build
 ```
 
 ## Installation with Python 
