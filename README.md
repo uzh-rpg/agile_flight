@@ -6,6 +6,14 @@ The goal is to build and benchmark autonomous algorithms for vision-based agile 
 
 ## Installation with ROS
 
+Create a new catkin workspace. 
+```
+TODO
+
+cd PATH_TO_YOUR_CATKIN_WS/src
+git clone git@github.com:uzh-rpg/agile_flight.git
+```
+
 Run the `setup_ros.bash` in the main folder of this repository, it will ask for sudo permissions.
 
 ```bash
