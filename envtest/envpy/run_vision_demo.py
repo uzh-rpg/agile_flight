@@ -19,7 +19,7 @@ def configure_random_seed(seed, env=None):
 def parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, default=0, help="Random seed")
-    parser.add_argument("--render", type=int, default=0, help="Render with Unity")
+    parser.add_argument("--render", type=int, default=1, help="Render with Unity")
     return parser
 
 
@@ -83,7 +83,8 @@ def main():
       
       rgb_img_tile = cv2.vconcat([cv2.hconcat(im_list_h) for im_list_h in rgb_img_list])
       cv2.imshow("rgb_img", rgb_img_tile)
-      cv2.imwrite("./images/img_{0:05d}.png".format(frame_id), rgb_img_tile)
+      if frame_id < 10:
+        cv2.imwrite("./images/img_{0:05d}.png".format(frame_id), rgb_img_tile)
       cv2.waitKey(500)
 
       # ======Depth Image=========
