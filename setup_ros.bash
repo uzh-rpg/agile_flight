@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ ! -f "$(pwd)/setup.bash" ]]
+if [[ ! -f "$(pwd)/setup_ros.bash" ]]
 then
   echo "please launch from the racing folder!"
   exit
