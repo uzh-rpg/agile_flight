@@ -37,7 +37,7 @@ def main():
         cfg["unity"]["render"] = "yes"
 
 
-    os.system(os.environ["FLIGHTMARE_PATH"] + "/flightrender/RPG_Flightmare.x86_64 &")
+    # os.system(os.environ["FLIGHTMARE_PATH"] + "/flightrender/RPG_Flightmare.x86_64 &")
 
     cfg["simulation"]["num_envs"] = 10
 

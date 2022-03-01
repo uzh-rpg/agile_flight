@@ -229,8 +229,7 @@ void VisionSim::publishImages(const QuadState &state) {
   std::vector<std::shared_ptr<flightlib::StaticObject>> static_objects =
     vision_env_.getObjects();
   for (int i = 0; i < int(static_objects.size()); i++) {
-    Vector<3> obj_position = unity_quad_state.p + Vector<3>(i, 0, 0);
-    static_objects[i]->setPosition(obj_position);
+    static_objects[i]->run(0.02);
   }
 
   vision_env_.updateUnity(frame_id_);
