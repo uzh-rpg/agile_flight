@@ -81,10 +81,10 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
       ROS_ERROR("Configuration file [%s] does not exists.",
                 camera_config.c_str());
     }
-    // YAML::Node cfg_node = YAML::LoadFile(camera_config);
-    // vision_env_.configCamera(cfg_node);
-    // vision_env_.setUnity(render_);
-    // vision_env_.connectUnity();
+    YAML::Node cfg_node = YAML::LoadFile(camera_config);
+    vision_env_.configCamera(cfg_node);
+    vision_env_.setUnity(render_);
+    vision_env_.connectUnity();
   }
 }
 
@@ -154,16 +154,7 @@ void VisionSim::simLoop() {
     ros_pilot_.getPilot().odometryCallback(quad_state);
 
     Command cmd = ros_pilot_.getCommand();
-    // investigate the round trip time from the cmd timestamp
-    //    ROS_INFO("Cmd delay: %.3f", quad_state.t - cmd.t);
     cmd.t -= t_start_.toSec();
-    //    if (ros_pilot_.feedthroughActive()) {
-    //      // we only add delay to this command type, otherwise MPC fails
-    //      cmd.t += 0.04;  // TODO: parameterize
-    //      //      ROS_INFO("Cmd delay: %.3f", quad_state.t - t_start_.toSec()
-    //      -
-    //      //      cmd.t);
-    //    }
     if (cmd.valid()) {
       {
         const std::lock_guard<std::mutex> lock(sim_mutex_);
@@ -186,7 +177,7 @@ void VisionSim::simLoop() {
     // Render here stuff
     if (render_) {
       if ((step_counter_ + 1) % render_every_n_steps_ == 0) {
-        // publishImages(quad_state);
+        publishImages(quad_state);
         step_counter_ = 0;
       } else {
         step_counter_ += 1;
@@ -220,7 +211,7 @@ void VisionSim::publishState(const QuadState &state) {
   state_pub_.publish(msg_state);
 }
 
-/*
+
 void VisionSim::publishImages(const QuadState &state) {
   sensor_msgs::ImagePtr rgb_msg;
   frame_id_ += 1;
@@ -266,7 +257,7 @@ void VisionSim::publishImages(const QuadState &state) {
   of_msg->header.stamp = ros::Time(state.t);
   opticalflow_pub_.publish(of_msg);
 }
-*/
+
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "visionsim_node");
