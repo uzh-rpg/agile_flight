@@ -9,13 +9,6 @@ using namespace agi;
 
 VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   : nh_(nh), pnh_(pnh), frame_id_(0) {
-  bool use_bem = false;
-  pnh_.getParam("use_bem_propeller_model", use_bem);
-  pnh_.getParam("real_time_factor", real_time_factor_);
-  pnh_.getParam("render", render_);
-  pnh_.getParam("agi_param_dir", agi_param_directory_);
-  pnh_.getParam("ros_param_dir", ros_param_directory_);
-
   // Logic subscribers
   reset_sub_ = pnh_.subscribe("reset_sim", 1, &VisionSim::resetCallback, this);
   reload_quad_sub_ = pnh_.subscribe("reload_quadrotor", 1,
@@ -28,31 +21,37 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
 
   image_transport::ImageTransport it(pnh_);
 
-  //
   image_pub_ = it.advertise("unity/image", 1);
   depth_pub_ = it.advertise("unity/depth", 1);
   opticalflow_pub_ = it.advertise("unity/opticalflow", 1);
 
   ros_pilot_.getQuadrotor(&quad_);
-
-  // hacky solution to pass the thrust map to the low level controller
-  // simulator_.setParamRoot(ros_pilot_.getPilot().getParams().directory_);
-
-  // Build simulation pipeline with simple model
   simulator_.updateQuad(quad_);
   simulator_.addModel(ModelInit{quad_});
   simulator_.addModel(ModelMotor{quad_});
+
+  bool use_bem = false;
+  std::string low_level_ctrl;
+  pnh_.getParam("render", render_);
+  pnh_.getParam("agi_param_dir", agi_param_directory_);
+  pnh_.getParam("ros_param_dir", ros_param_directory_);
+  pnh_.getParam("use_bem_propeller_model", use_bem);
+  pnh_.getParam("real_time_factor", real_time_factor_);
+  pnh_.getParam("low_level_controller", low_level_ctrl);
+  const bool got_directory = pnh_.getParam("agi_param_dir", agi_param_directory_);
+
   if (use_bem) {
-    std::cout << "Using BEM to model thrust" << std::endl;
-    auto bem_model = simulator_.addModel(ModelPropellerBEM{quad_});
-    auto drag_model = simulator_.addModel(ModelBodyDrag{quad_});
-    std::string directory;
-    const bool got_directory = pnh.getParam("param_dir", directory);
-    if (got_directory) {
-      bem_model->ModelBase::setParameters(directory +
-                                          "/quads/sim_kingfisher.yaml");
-      drag_model->ModelBase::setParameters(directory +
-                                           "/quads/sim_kingfisher.yaml");
+    std::shared_ptr<ModelPropellerBEM> bem_model =
+      simulator_.addModel(ModelPropellerBEM{quad_});
+    std::shared_ptr<ModelBodyDrag> drag_model =
+      simulator_.addModel(ModelBodyDrag{quad_});
+    std::string bem_quad;
+    const bool got_bem_quad = pnh_.getParam("bem_quad", bem_quad);
+    if (got_directory && got_bem_quad) {
+      fs::path bem_param_file = agi_param_directory_ + "/quads/" + bem_quad;
+      Yaml node{bem_param_file};
+      bem_model->setParameters(node);
+      drag_model->setParameters(node);
     } else {
       ROS_WARN("Could not load BEM parameters!");
     }
@@ -61,6 +60,14 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
     simulator_.addModel(ModelThrustTorqueSimple{quad_});
   }
   simulator_.addModel(ModelRigidBody{quad_});
+
+  if(!  simulator_.setLowLevelController(low_level_ctrl)) {
+    ROS_WARN("Could not set low level controller!");
+  }
+  std::shared_ptr<LowLevelControllerBase> low_level_ctrl_ptr =
+    simulator_.getLowLevelController();
+  ROS_INFO("Setting LLC param dir to %s", agi_param_directory_.c_str());
+  low_level_ctrl_ptr->setParamDir(agi_param_directory_);
 
   QuadState quad_state;
 
@@ -74,10 +81,10 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
       ROS_ERROR("Configuration file [%s] does not exists.",
                 camera_config.c_str());
     }
-    YAML::Node cfg_node = YAML::LoadFile(camera_config);
-    vision_env_.configCamera(cfg_node);
-    vision_env_.setUnity(render_);
-    vision_env_.connectUnity();
+    // YAML::Node cfg_node = YAML::LoadFile(camera_config);
+    // vision_env_.configCamera(cfg_node);
+    // vision_env_.setUnity(render_);
+    // vision_env_.connectUnity();
   }
 }
 
@@ -179,7 +186,7 @@ void VisionSim::simLoop() {
     // Render here stuff
     if (render_) {
       if ((step_counter_ + 1) % render_every_n_steps_ == 0) {
-        publishImages(quad_state);
+        // publishImages(quad_state);
         step_counter_ = 0;
       } else {
         step_counter_ += 1;
@@ -213,6 +220,7 @@ void VisionSim::publishState(const QuadState &state) {
   state_pub_.publish(msg_state);
 }
 
+/*
 void VisionSim::publishImages(const QuadState &state) {
   sensor_msgs::ImagePtr rgb_msg;
   frame_id_ += 1;
@@ -258,7 +266,7 @@ void VisionSim::publishImages(const QuadState &state) {
   of_msg->header.stamp = ros::Time(state.t);
   opticalflow_pub_.publish(of_msg);
 }
-
+*/
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "visionsim_node");
