@@ -39,7 +39,7 @@ def main():
 
     # os.system(os.environ["FLIGHTMARE_PATH"] + "/flightrender/RPG_Flightmare.x86_64 &")
 
-    cfg["simulation"]["num_envs"] = 10
+    cfg["simulation"]["num_envs"] = 2 
 
     # create training environment
     env = VisionEnv_v1(dump(cfg, Dumper=RoundTripDumper), False)
@@ -64,7 +64,8 @@ def main():
 
       obs, rew, done, info = env.step(dummy_actions)
       #
-      env.render(frame_id = frame_id)
+      receive_frame_id = env.render(frame_id = frame_id)
+      print("sending frame id: ", frame_id, "received frame id: ", receive_frame_id)
 
       # ======RGB Image=========
       raw_rgb_img =env.getImage(rgb=True) 
