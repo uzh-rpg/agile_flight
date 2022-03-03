@@ -41,7 +41,7 @@ Start the simulation:
 python3 -m envpy.run_vision_demo --render 1
 ```
 ## Train your Neural Network Control via PPO with privilege infomation
-Start the simulation:
+Start the training:
 ```
 python3 -m envpy.run_vision_ppo --render 0 --train 1
 ```
