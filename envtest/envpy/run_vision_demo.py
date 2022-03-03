@@ -37,9 +37,9 @@ def main():
         cfg["unity"]["render"] = "yes"
 
 
-    # os.system(os.environ["FLIGHTMARE_PATH"] + "/flightrender/RPG_Flightmare.x86_64 &")
+    os.system(os.environ["FLIGHTMARE_PATH"] + "/flightrender/RPG_Flightmare.x86_64 &")
 
-    cfg["simulation"]["num_envs"] = 2 
+    cfg["simulation"]["num_envs"] = 1 
 
     # create training environment
     env = VisionEnv_v1(dump(cfg, Dumper=RoundTripDumper), False)
@@ -63,6 +63,8 @@ def main():
       dummy_actions = np.random.rand(num_env, act_dim) * 2 - np.ones(shape=(num_env, act_dim))
 
       obs, rew, done, info = env.step(dummy_actions)
+      print(obs)
+
       #
       receive_frame_id = env.render(frame_id = frame_id)
       print("sending frame id: ", frame_id, "received frame id: ", receive_frame_id)
@@ -71,7 +73,7 @@ def main():
       raw_rgb_img =env.getImage(rgb=True) 
 
       num_img = raw_rgb_img.shape[0] 
-      num_col = 2
+      num_col = 1
       num_row = int(num_img / num_col)
 
       rgb_img_list = []
