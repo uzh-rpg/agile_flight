@@ -40,3 +40,8 @@ Start the simulation:
 ```
 python3 -m envpy.run_vision_demo --render 1
 ```
+## Train your algorithm with PPO with privilege infomation
+Start the simulation:
+```
+python3 -m envpy.run_vision_ppo --render 0 --train 1
+```
