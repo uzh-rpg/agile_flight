@@ -43,6 +43,9 @@ def main():
         )
     )
 
+    if not args.train:
+        cfg["simulation"]["num_envs"] = 1 
+
     # create training environment
     train_env = VisionEnv_v1(dump(cfg, Dumper=RoundTripDumper), False)
     train_env = wrapper.FlightEnvVec(train_env)
@@ -52,7 +55,7 @@ def main():
 
     if args.render:
         cfg["unity"]["render"] = "yes"
-
+    
     # create evaluation environment
     old_num_envs = cfg["simulation"]["num_envs"]
     cfg["simulation"]["num_envs"] = 1
@@ -63,7 +66,6 @@ def main():
 
     # save the configuration and other files
     rsg_root = os.path.dirname(os.path.abspath(__file__))
-    print(rsg_root)
     log_dir = rsg_root + "/saved"
     os.makedirs(log_dir, exist_ok=True)
 
@@ -96,9 +98,10 @@ def main():
         #
         model.learn(total_timesteps=int(1e7), log_interval=(10, 50))
     else:
+        os.system(os.environ["FLIGHTMARE_PATH"] + "/flightrender/RPG_Flightmare.x86_64 &")
         #
-        weight = os.environ["FLIGHTMARE_PATH"] + "/flightpy/flightrl/saved/PPO_{0}/Policy/iter_{1:05d}.pth".format(args.trial, args.iter)
-        env_rms = os.environ["FLIGHTMARE_PATH"] +"/flightpy/flightrl/saved/PPO_{0}/RMS/iter_{1:05d}.npz".format(args.trial, args.iter)
+        weight = rsg_root + "/saved/PPO_{0}/Policy/iter_{1:05d}.pth".format(args.trial, args.iter)
+        env_rms = rsg_root +"/saved/PPO_{0}/RMS/iter_{1:05d}.npz".format(args.trial, args.iter)
 
         device = get_device("auto")
         saved_variables = torch.load(weight, map_location=device)
