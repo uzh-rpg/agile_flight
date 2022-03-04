@@ -26,7 +26,7 @@ def configure_random_seed(seed, env=None):
 def parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, default=0, help="Random seed")
-    parser.add_argument("--train", type=int, default=0, help="Train the policy or evaluate the policy")
+    parser.add_argument("--train", type=int, default=1, help="Train the policy or evaluate the policy")
     parser.add_argument("--render", type=int, default=0, help="Render with Unity")
     parser.add_argument("--trial", type=int, default=1, help="PPO trial number")
     parser.add_argument("--iter", type=int, default=100, help="PPO iter number")
