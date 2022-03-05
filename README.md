@@ -63,11 +63,19 @@ Make sure you have completed the ROS Installation (todo: add link?) before!
 
 Start the simulation:
 ```
-roslaunch envsim visionenv_sim.launch render:=True use_unity:=True
+roslaunch envsim visionenv_sim.launch render:=True
+```
+
+Start the navigation code:
+
+I (Elia) started something in `envtest/ros/ros_test.py`. Not clear yet how to interface with trained policy from Yunlong?
+Also not yet clear how we get the information about the obstacles in ROS, which is needed for all non-vision-based approaches.
+```
+TODO
 ```
 
 ## Usage with Python 
-Question for Yunlong: what is this needed for?
+(Question for Yunlong: what is this needed for?)
 
 Start the simulation:
 ```
