@@ -77,7 +77,7 @@ To test if the Flightmare simulator has been correctly installed as a python pac
 
 ```
 cd agile_flight/envtest
-python3 -m envpy.run_vision_demo --render 1
+python3 -m python.run_vision_demo --render 1
 ```
 
-Read [this](/agile_flight/envtest/envpy/README.md) to know more about how to use the code for Python and Reinforcement Learning. 
+Read [this](/envtest/python/README.md) to know more about how to use the code for Python and Reinforcement Learning. 

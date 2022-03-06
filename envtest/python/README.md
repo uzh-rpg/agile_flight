@@ -4,7 +4,7 @@ To test if the Flightmare simulator has been correctly installed as a python pac
 
 ```
 cd agile_flight/envtest
-python3 -m envpy.run_vision_demo --render 1
+python3 -m python.run_vision_demo --render 1
 ```
 
 You should have TWO opencv windows open: one RGB image and one depth image. 
@@ -18,5 +18,5 @@ We provide a simple reinforcement learning code for you. Run the training via th
 
 ```
 cd agile_flight/envtest
-python3 -m envpy.run_vision_ppo --render 0 --train 1
+python3 -m python.run_vision_ppo --render 0 --train 1
 ```
