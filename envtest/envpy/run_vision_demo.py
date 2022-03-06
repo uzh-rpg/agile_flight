@@ -34,12 +34,17 @@ def main():
     )
 
     if args.render:
+        # to connect unity
         cfg["unity"]["render"] = "yes"
+        # to simulate rgb camera
+        cfg["rgb_camera"]["on"] = "yes"
 
 
+    # load the Unity standardalone, make sure you have downloaded it.
     os.system(os.environ["FLIGHTMARE_PATH"] + "/flightrender/RPG_Flightmare.x86_64 &")
 
-    cfg["simulation"]["num_envs"] = 1 
+    # define the number of environment for parallelization simulation
+    cfg["simulation"]["num_envs"] = 4 
 
     # create training environment
     env = VisionEnv_v1(dump(cfg, Dumper=RoundTripDumper), False)
@@ -53,23 +58,24 @@ def main():
 
     env.reset(random=True)
 
+    # connect unity
     if args.render:
       env.connectUnity()
 
 
     for frame_id in range(ep_length):
       print("Simuation step: {0}".format(frame_id))
-      # generate action [-1, 1]
+      # generate dummmy action [-1, 1]
       dummy_actions = np.random.rand(num_env, act_dim) * 2 - np.ones(shape=(num_env, act_dim))
 
+      # A standard OpenAI gym style interface for reinforcement learning.    
       obs, rew, done, info = env.step(dummy_actions)
-      print(obs)
-
+ 
       #
       receive_frame_id = env.render(frame_id = frame_id)
       print("sending frame id: ", frame_id, "received frame id: ", receive_frame_id)
 
-      # ======RGB Image=========
+      # ====== Retrive RGB Image From the simulator=========
       raw_rgb_img =env.getImage(rgb=True) 
 
       num_img = raw_rgb_img.shape[0] 
@@ -86,11 +92,11 @@ def main():
       
       rgb_img_tile = cv2.vconcat([cv2.hconcat(im_list_h) for im_list_h in rgb_img_list])
       cv2.imshow("rgb_img", rgb_img_tile)
-      if frame_id < 10:
-        cv2.imwrite("./images/img_{0:05d}.png".format(frame_id), rgb_img_tile)
+      # cv2.imwrite("./images/img_{0:05d}.png".format(frame_id), rgb_img_tile)
+      # wait for the purpose of using open cv visualization
       cv2.waitKey(500)
 
-      # ======Depth Image=========
+      # ======Retrive Depth Image=========
       raw_depth_images = env.getDepthImage()
       depth_img_list = []
       for col in range(num_col):
@@ -102,6 +108,7 @@ def main():
       
       depth_img_tile = cv2.vconcat([cv2.hconcat(im_list_h) for im_list_h in depth_img_list])
       cv2.imshow("depth_img", depth_img_tile)
+      # wait for the purpose of using open cv visualization
       cv2.waitKey(500)
 
     #
