@@ -45,18 +45,15 @@ https://drive.google.com/file/d/1ROT6EVmsdDHXM6hnMxM8cHQLStDlak_E/view?usp=shari
 catkin build
 ```
 
-## Installation for Reinforcement Learning
-If you want to train a learning-based obstacle avoidance policy using RL, you can use our training utilities for this! 
+## Installation wtih Python 
+If you want to train a learning-based obstacle avoidance policy using Python, you can use our training utilities for this! 
 Run the `setup_py.bash` in the main folder of this repository, it will ask for sudo permissions.
-If you don't plan to use RL, python setup is not needed.
+
+(If you don't plan to use RL, python setup is not needed.)
+
 ```bash
 ./setup_py.bash
 ```
-Initiate a training with the following command: 
-```
-python3 -m envpy.run_vision_ppo --render 0 --train 1
-```
-Above command will .... (Question for Yunlong: can you shortly summarize what this code is doing?)
 
 ## Testing in ROS
 Make sure you have completed the ROS Installation (todo: add link?) before!
@@ -75,9 +72,12 @@ TODO
 ```
 
 ## Usage with Python 
-(Question for Yunlong: what is this needed for?)
 
-Start the simulation:
+To test if the Flightmare simulator has been correctly installed as a python package, run vision demo script via the following command. 
+
 ```
+cd agile_flight/envtest
 python3 -m envpy.run_vision_demo --render 1
 ```
+
+Read [this](/agile_flight/envtest/envpy/README.md) to know more about how to use the code for Python and Reinforcement Learning. 

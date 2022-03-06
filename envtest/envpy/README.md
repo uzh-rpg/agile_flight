@@ -8,7 +8,7 @@ python3 -m envpy.run_vision_demo --render 1
 ```
 
 You should have TWO opencv windows open: one RGB image and one depth image. 
-Each [vision_env](flightmare/flightlib/include/flightlib/envs/vision_env/vision_env.hpp) simulate one quadrotor, which has a monocular camera attached. We use vectorized environment [vision_vec_env](flightmare/flightlib/include/flightlib/envs/vision_env/vision_env.hpp) for parallel simulation. As a result, you will have multiple simulated cameras. 
+Each [vision_env](/flightmare/flightlib/include/flightlib/envs/vision_env/vision_env.hpp) simulate one quadrotor, which has a monocular camera attached. We use vectorized environment [vision_vec_env](/flightmare/flightlib/include/flightlib/envs/vision_env/vision_env.hpp) for parallel simulation. As a result, you will have multiple simulated cameras. 
 
 ![vision_demo](/docs/imgs/vision_demo.png)
 
