@@ -62,6 +62,7 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   }
   simulator_.addModel(ModelRigidBody{quad_});
 
+
   if (!simulator_.setLowLevelController(low_level_ctrl)) {
     ROS_WARN("Could not set low level controller!");
   }
@@ -235,9 +236,9 @@ void VisionSim::publishImages(const QuadState &state) {
   std::vector<std::shared_ptr<flightlib::UnityObject>> static_objects =
     vision_env_.getStaticObjects();
 
-  std::cout << "Number of Dynamic Objects: " << dynamic_objects.size()
-            << ", Number of Static Objects : " << static_objects.size()
-            << std::endl;
+  // std::cout << "Number of Dynamic Objects: " << dynamic_objects.size()
+  //           << ", Number of Static Objects : " << static_objects.size()
+  //           << std::endl;
 
   vision_env_.updateUnity(frame_id_);
 
