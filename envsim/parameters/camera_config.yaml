@@ -7,5 +7,5 @@ rgb_camera:
   height: 240
   fov: 70.0
   enable_depth: yes
-  enable_segmentation: yes 
-  enable_opticalflow: yes 
+  enable_segmentation: no 
+  enable_opticalflow: no 

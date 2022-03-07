@@ -44,7 +44,7 @@ def main():
     os.system(os.environ["FLIGHTMARE_PATH"] + "/flightrender/RPG_Flightmare.x86_64 &")
 
     # define the number of environment for parallelization simulation
-    cfg["simulation"]["num_envs"] = 4 
+    cfg["simulation"]["num_envs"] = 1 
 
     # create training environment
     env = VisionEnv_v1(dump(cfg, Dumper=RoundTripDumper), False)
