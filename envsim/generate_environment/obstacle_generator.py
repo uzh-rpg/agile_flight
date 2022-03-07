@@ -10,10 +10,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
 
-SEED = 20220301
+if len(sys.argv) == 2:
+    SEED = int(sys.argv[1])
+else:
+    SEED = 20220301
 random.seed(SEED)
 np.random.seed(SEED)
-
 
 class Trajectory:
     def __init__(self, config, traj_type = "000000"):
@@ -25,6 +27,9 @@ class Trajectory:
                 and "r" not in traj_type \
                 and "R" not in traj_type:
             self.N = 1
+            self.is_static = True
+        else:
+            self.is_static = False
 
         self.name = None
         self.t = np.zeros((self.N ,1), dtype=float)
@@ -74,6 +79,8 @@ class Trajectory:
 
 
     def toCsv(self, basepath):
+        if self.is_static:
+            return
         assert(self.pos.shape[0] == self.att.shape[0]), "Attitude has wrong shape"
         assert(self.pos.shape[0] == self.N), "Time has wrong shape"
 
@@ -134,7 +141,8 @@ class Trajectory:
 class Obstacle:
     def __init__(self, config):
         self.prefab = config['prefab_name']
-        self.scale = config['scale']
+        self.scale = np.random.uniform(low=config['scale'][0],
+                                       high=config['scale'][1])
         self.traj_type = config['traj_type']
         self.trajectory = Trajectory(config, self.traj_type)
 
@@ -153,10 +161,14 @@ class Obstacle:
         return d
 
 
+    def isStatic(self):
+        return self.trajectory.is_static
+
+
 class ObstacleGroup:
     def __init__(self, global_config, local_config, name = "object"):
         """ The idea is that any global setting can be overwritten for any
-        local group. So some things might only appear in certain places and 
+        local group. So some things might only appear in certain places and
         not other places. Or mushrooms may have an exclusion zone or whatever.
         This is extremely flexibel and easy to expand.
         """
@@ -166,12 +178,12 @@ class ObstacleGroup:
             return
 
         self.config = copy.deepcopy(global_config)
-        
+
         assert("prefab_name" in local_config.keys()), "Prefab name required for %s" % name
         assert("traj_type" in local_config.keys()), "Trajectory type required for %s" % name
         for key in local_config.keys():
            self.config[key] = local_config[key]
-        
+
         self.config['pos_bb'] = np.reshape(np.array(
                                  self.config['pos_bb'],dtype=float), (3,2)).T
         self.config['vel_bb'] = np.reshape(np.array(
@@ -199,7 +211,7 @@ class ObstacleGroup:
         for i in range(self.num_objects):
             self.obstacle_list.append(Obstacle(self.config))
 
-    
+
     def getObstacleList(self):
         return self.obstacle_list
 
@@ -221,11 +233,26 @@ class World:
         for group in self.obs_groups:
             obstacle_list.extend(group.getObstacleList())
 
-        for i,obstacle in enumerate(obstacle_list):
-            d["Object%i" % (i+1)] = obstacle.toDict()
-        d["N"] = len(obstacle_list)
+        i = 0
+        static_obstacles = []
+        for obstacle in obstacle_list:
+            if obstacle.isStatic():
+                o = obstacle.toDict()
+                tmp = [o['prefab']]
+                tmp.extend(o['position'])
+                tmp.extend(o['rotation'])
+                tmp.extend(o['scale'])
+                static_obstacles.append(", ".join([str(x) for x in tmp]))
+            else:
+                i += 1
+                d["Object%i" % i] = obstacle.toDict()
+
+        d["N"] = len(d.keys())
         with open(filename, "w") as f:
             yaml.dump(d, f)
+
+        with open("static_obstacles.csv", "w") as f:
+            f.write("\n".join(static_obstacles))
 
 
 class Plotter:
@@ -240,7 +267,7 @@ class Plotter:
         for csv in csvs:
             data = np.loadtxt(os.path.join(csvfolder, csv), delimiter = ",", skiprows = 1, ndmin=2)
             self.plotCsv(data)
-        
+
         self.ax.set_xlabel("X [m]")
         self.ax.set_ylabel("Y [m]")
         self.ax.set_zlabel("Z [m]")
@@ -258,13 +285,13 @@ class Plotter:
 
 
 if __name__=="__main__":
-    os.system("rm csvtrajs/*")
+    os.system("rm -rf csvtrajs/*")
     with open("obstacle_config.yaml") as f:
         config = yaml.safe_load(f)
     w = World(config)
-    w.toYaml("objects.yaml")
+    w.toYaml("dynamic_obstacles.yaml")
 
-    p = Plotter("csvtrajs", config)
+    #  p = Plotter("csvtrajs", config)
 
 
 

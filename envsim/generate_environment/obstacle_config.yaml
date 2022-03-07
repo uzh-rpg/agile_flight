@@ -4,7 +4,7 @@ max_time: 30 # s
 
 # Those settings are global as well but they can be overriden
 # individually by each object group below.
-pos_bb: [ -0, 60, -25, 25,  0,  10 ]
+pos_bb: [ -0, 60, -10, 10,  0,  10 ]
 vel_bb: [ -5,   5,  -5,  5, -2,  2 ]
 acc_bb: [ -10,   10,  -10,  10, -10,  10 ]
 att_bb: [ -180, 180,  -90,  90, -180, 180 ]
@@ -15,34 +15,38 @@ angacc_bb: [ -180, 180,  -90,  90, -180, 180 ]
 exclusion_zone: [[-1, 1, -1, 1, 0, 2], [59, 61, -1, 1, 0, 5]]
 
 density: 1 # objects per square meter
-scale: 1
+scale: [0.10, 3]
 
 box_static_region1:
   prefab_name: "rpg_box01"
   traj_type: "cc0000"
-  density: 0.011
-  pos_bb: [ 0, 60, -25, 25,  0,  10 ]
+  density: 0.21
+  pos_bb: [ 0, 60, -10, 10,  0,  10 ]
 
 box_static_region2:
   prefab_name: "rpg_box01"
   traj_type: "cc0000"
-  density: 0.011
-  pos_bb: [ 0, 60, -25, 25,  0,  10 ]
+  density: 0.41
+  pos_bb: [ 0, 60, -10, 10,  0,  10 ]
 
 box_constvel_region2:
   prefab_name: "rpg_box01"
   traj_type: "ccc000"
-  density: 0.011
-  pos_bb: [ 20, 60, -25, 25,  0,  10 ]
+  density: 0.11
+  pos_bb: [ 20, 60, -10, 10,  0,  10 ]
+  scale: [0.5, 2]
 
 box_static_region3:
   prefab_name: "rpg_box01"
   traj_type: "cc0000"
-  density: 0.011
-  pos_bb: [ 40, 60, -25, 25,  0,  10 ]
+  density: 0.61
+  pos_bb: [ 40, 60, -10, 10,  0,  10 ]
 
 box_randaccel_region3:
   prefab_name: "rpg_box01"
-  traj_type: "ccccrr"
-  density: 0.011
-  pos_bb: [ 40, 60, -25, 25,  0,  10 ]
+  traj_type: "ccccr0"
+  density: 0.11
+  pos_bb: [ 40, 60, -10, 10,  0,  10 ]
+  vel_bb: [ -1,   1,  -1,  1, -1,  1 ]
+  acc_bb: [ -30,   30,  -30,  30, -30,  30 ]
+  scale: [0.5, 1.5]
