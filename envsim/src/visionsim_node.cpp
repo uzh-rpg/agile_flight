@@ -79,10 +79,11 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   std::string cfg_path = getenv("FLIGHTMARE_PATH") +
                          std::string("/flightpy/configs/vision/config.yaml");
   YAML::Node env_cfg = YAML::LoadFile(cfg_path);
+  cmd_.setZeros();
+  quad_ptr_ = std::make_shared<flightlib::Quadrotor>();
   int env_id = 0;
   std::cout << env_cfg << std::endl;
-  sleep(5);
-  vision_env_ptr_ = std::make_unique<flightlib::VisionEnv>(cfg_path, env_id);
+  // vision_env_ptr_ = std::make_unique<flightlib::VisionEnv>(cfg_path, env_id);
   // if (render_) {
   //   std::string camera_config = ros_param_directory_ + "/camera_config.yaml";
   //   if (!(std::filesystem::exists(camera_config))) {
@@ -198,12 +199,12 @@ void VisionSim::simLoop() {
     }
 
     // simulate dynamic obstacles
-    std::vector<std::shared_ptr<flightlib::UnityObject>> dynamic_objects =
-      vision_env_ptr_->getDynamicObjects();
-    for (int i = 0; i < int(dynamic_objects.size()); i++) {
-      dynamic_objects[i]->run(sim_dt_);
-    }
-    publishObstacles(quad_state);
+    // std::vector<std::shared_ptr<flightlib::UnityObject>> dynamic_objects =
+    //   vision_env_ptr_->getDynamicObjects();
+    // for (int i = 0; i < int(dynamic_objects.size()); i++) {
+    //   dynamic_objects[i]->run(sim_dt_);
+    // }
+    // publishObstacles(quad_state);
 
     Scalar sleep_time = 1.0 / real_time_factor_ * sim_dt_ -
                         (ros::WallTime::now() - t_start_sim).toSec();
@@ -234,67 +235,67 @@ void VisionSim::publishState(const QuadState &state) {
 }
 
 void VisionSim::publishObstacles(const QuadState &state) {
-  flightlib::QuadState unity_quad_state;
-  unity_quad_state.setZero();
-  unity_quad_state.p = state.p.cast<flightlib::Scalar>();
-  unity_quad_state.qx = state.qx.cast<flightlib::Scalar>();
+  // flightlib::QuadState unity_quad_state;
+  // unity_quad_state.setZero();
+  // unity_quad_state.p = state.p.cast<flightlib::Scalar>();
+  // unity_quad_state.qx = state.qx.cast<flightlib::Scalar>();
 
-  vision_env_ptr_->getQuadrotor()->setState(unity_quad_state);
+  // vision_env_ptr_->getQuadrotor()->setState(unity_quad_state);
 
-  //
-  std_msgs::Float32MultiArray msg_obstacle_state;
-  num_detected_obstacles_ = vision_env_ptr_->getNumDetectedObstacles();
-  flightlib::Vector<> obstacle_state;
-  obstacle_state.resize(3 * num_detected_obstacles_);
-  vision_env_ptr_->getObstacleState(obstacle_state);
+  // //
+  // std_msgs::Float32MultiArray msg_obstacle_state;
+  // num_detected_obstacles_ = vision_env_ptr_->getNumDetectedObstacles();
+  // flightlib::Vector<> obstacle_state;
+  // obstacle_state.resize(3 * num_detected_obstacles_);
+  // vision_env_ptr_->getObstacleState(obstacle_state);
 
 
-  for (int i = 0; i < obstacle_state.size(); i++) {
-    msg_obstacle_state.data.push_back(obstacle_state[i]);
-  }
-  obstacle_pub_.publish(msg_obstacle_state);
+  // for (int i = 0; i < obstacle_state.size(); i++) {
+  //   msg_obstacle_state.data.push_back(obstacle_state[i]);
+  // }
+  // obstacle_pub_.publish(msg_obstacle_state);
 }
 
 
 void VisionSim::publishImages(const QuadState &state) {
-  sensor_msgs::ImagePtr rgb_msg;
-  frame_id_ += 1;
-  // render the frame
-  flightlib::QuadState unity_quad_state;
-  unity_quad_state.setZero();
-  unity_quad_state.p = state.p.cast<flightlib::Scalar>();
-  unity_quad_state.qx = state.qx.cast<flightlib::Scalar>();
+  // sensor_msgs::ImagePtr rgb_msg;
+  // frame_id_ += 1;
+  // // render the frame
+  // flightlib::QuadState unity_quad_state;
+  // unity_quad_state.setZero();
+  // unity_quad_state.p = state.p.cast<flightlib::Scalar>();
+  // unity_quad_state.qx = state.qx.cast<flightlib::Scalar>();
 
-  std::shared_ptr<flightlib::Quadrotor> unity_quad =
-    vision_env_ptr_->getQuadrotor();
-  unity_quad->setState(unity_quad_state);
-
-
-  vision_env_ptr_->updateUnity(frame_id_);
-
-  // Warning, delay
-  cv::Mat img, depth, of;
-
-  // RGB Image
-  unity_quad->getCameras()[0]->getRGBImage(img);
-  rgb_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img).toImageMsg();
-  rgb_msg->header.stamp = ros::Time(state.t);
-  image_pub_.publish(rgb_msg);
+  // std::shared_ptr<flightlib::Quadrotor> unity_quad =
+  //   vision_env_ptr_->getQuadrotor();
+  // unity_quad->setState(unity_quad_state);
 
 
-  // Depth Image
-  unity_quad->getCameras()[0]->getDepthMap(depth);
-  sensor_msgs::ImagePtr depth_msg =
-    cv_bridge::CvImage(std_msgs::Header(), "32FC1", depth).toImageMsg();
-  depth_msg->header.stamp = ros::Time(state.t);
-  depth_pub_.publish(depth_msg);
+  // vision_env_ptr_->updateUnity(frame_id_);
 
-  // Optical Flow
-  unity_quad->getCameras()[0]->getOpticalFlow(of);
-  sensor_msgs::ImagePtr of_msg =
-    cv_bridge::CvImage(std_msgs::Header(), "bgr8", of).toImageMsg();
-  of_msg->header.stamp = ros::Time(state.t);
-  opticalflow_pub_.publish(of_msg);
+  // // Warning, delay
+  // cv::Mat img, depth, of;
+
+  // // RGB Image
+  // unity_quad->getCameras()[0]->getRGBImage(img);
+  // rgb_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img).toImageMsg();
+  // rgb_msg->header.stamp = ros::Time(state.t);
+  // image_pub_.publish(rgb_msg);
+
+
+  // // Depth Image
+  // unity_quad->getCameras()[0]->getDepthMap(depth);
+  // sensor_msgs::ImagePtr depth_msg =
+  //   cv_bridge::CvImage(std_msgs::Header(), "32FC1", depth).toImageMsg();
+  // depth_msg->header.stamp = ros::Time(state.t);
+  // depth_pub_.publish(depth_msg);
+
+  // // Optical Flow
+  // unity_quad->getCameras()[0]->getOpticalFlow(of);
+  // sensor_msgs::ImagePtr of_msg =
+  //   cv_bridge::CvImage(std_msgs::Header(), "bgr8", of).toImageMsg();
+  // of_msg->header.stamp = ros::Time(state.t);
+  // opticalflow_pub_.publish(of_msg);
 }
 
 

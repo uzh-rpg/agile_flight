@@ -10,7 +10,7 @@
     <arg name="rviz" default="True"/>
 
     <group ns="$(arg quad_name)">
-        <node name="agiros_pilot" pkg="envsim" type="visionsim_node" output="screen" launch-prefix="xterm -e gdb --args">
+        <node name="agiros_pilot" pkg="envsim" type="visionsim_node" output="screen" launch-prefix="gdb -ex run --args">
             <param name="agi_param_dir" value="$(find agilib)/params"/>
             <param name="ros_param_dir" value="$(find envsim)/parameters"/>
             <param name="use_bem_propeller_model" value="$(arg use_bem_propeller_model)"/>
