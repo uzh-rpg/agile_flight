@@ -65,6 +65,7 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   }
   simulator_.addModel(ModelRigidBody{quad_});
 
+
   if (!simulator_.setLowLevelController(low_level_ctrl)) {
     ROS_WARN("Could not set low level controller!");
   }
