@@ -26,18 +26,13 @@ catkin init
 catkin config --extend /opt/ros/$ROS_VERSION
 catkin config --merge-devel
 catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-fdiagnostics-color
-cd src
 
-cd $CATKIN_WS/src
+cd src
 git clone git@github.com:uzh-rpg/agile_flight.git
 cd agile_flight
 ```
 
 Run the `setup_ros.bash` in the main folder of this repository, it will ask for sudo permissions.
-
-**TODO: need to update `setup_ros.bash` to point to the correct flightmare standalone! For now, download the standalone from here:**
-https://drive.google.com/file/d/1ROT6EVmsdDHXM6hnMxM8cHQLStDlak_E/view?usp=sharing
-
 
 ```bash
 ./setup_ros.bash
