@@ -21,6 +21,9 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
 
   image_transport::ImageTransport it(pnh_);
 
+  obstacle_pub_ =
+    pnh_.advertise<std_msgs::Float32MultiArray>("groundtruth/obstacles", 1);
+
   image_pub_ = it.advertise("unity/image", 1);
   depth_pub_ = it.advertise("unity/depth", 1);
   opticalflow_pub_ = it.advertise("unity/opticalflow", 1);
@@ -184,6 +187,15 @@ void VisionSim::simLoop() {
         step_counter_ += 1;
       }
     }
+
+    // simulate dynamic obstacles
+    std::vector<std::shared_ptr<flightlib::UnityObject>> dynamic_objects =
+      vision_env_.getDynamicObjects();
+    for (int i = 0; i < int(dynamic_objects.size()); i++) {
+      dynamic_objects[i]->run(sim_dt_);
+    }
+    publishObstacles(quad_state);
+
     Scalar sleep_time = 1.0 / real_time_factor_ * sim_dt_ -
                         (ros::WallTime::now() - t_start_sim).toSec();
     ros::WallDuration(std::max(sleep_time, 0.0)).sleep();
@@ -212,6 +224,28 @@ void VisionSim::publishState(const QuadState &state) {
   state_pub_.publish(msg_state);
 }
 
+void VisionSim::publishObstacles(const QuadState &state) {
+  flightlib::QuadState unity_quad_state;
+  unity_quad_state.setZero();
+  unity_quad_state.p = state.p.cast<flightlib::Scalar>();
+  unity_quad_state.qx = state.qx.cast<flightlib::Scalar>();
+
+  vision_env_.getQuadrotor()->setState(unity_quad_state);
+
+  //
+  std_msgs::Float32MultiArray msg_obstacle_state;
+  num_detected_obstacles_ = vision_env_.getNumDetectedObstacles();
+  flightlib::Vector<> obstacle_state;
+  obstacle_state.resize(3 * num_detected_obstacles_);
+  vision_env_.getObstacleState(obstacle_state);
+
+
+  for (int i = 0; i < obstacle_state.size(); i++) {
+    msg_obstacle_state.data.push_back(obstacle_state[i]);
+  }
+  obstacle_pub_.publish(msg_obstacle_state);
+}
+
 
 void VisionSim::publishImages(const QuadState &state) {
   sensor_msgs::ImagePtr rgb_msg;
@@ -225,19 +259,6 @@ void VisionSim::publishImages(const QuadState &state) {
   std::shared_ptr<flightlib::Quadrotor> unity_quad = vision_env_.getQuadrotor();
   unity_quad->setState(unity_quad_state);
 
-
-  std::vector<std::shared_ptr<flightlib::UnityObject>> dynamic_objects =
-    vision_env_.getDynamicObjects();
-  for (int i = 0; i < int(dynamic_objects.size()); i++) {
-    dynamic_objects[i]->run(0.02);
-  }
-
-  std::vector<std::shared_ptr<flightlib::UnityObject>> static_objects =
-    vision_env_.getStaticObjects();
-
-  std::cout << "Number of Dynamic Objects: " << dynamic_objects.size()
-            << ", Number of Static Objects : " << static_objects.size()
-            << std::endl;
 
   vision_env_.updateUnity(frame_id_);
 

@@ -11,6 +11,7 @@
 
 #include <filesystem>
 
+#include "std_msgs/Float32MultiArray.h"
 #include "std_msgs/String.h"
 
 // -- agilicious
@@ -55,6 +56,7 @@ class VisionSim {
   void simLoop();
   void publishState(const QuadState& state);
   void publishImages(const QuadState& state);
+  void publishObstacles(const QuadState& state);
 
   ros::NodeHandle nh_, pnh_;
   ros::Subscriber reset_sub_;
@@ -65,6 +67,8 @@ class VisionSim {
   ros::Publisher delayed_state_pub_;
   ros::Publisher mockvio_state_pub_;
   ros::Publisher clock_pub_;
+
+  ros::Publisher obstacle_pub_;
 
   image_transport::Publisher image_pub_;
   image_transport::Publisher depth_pub_;
@@ -87,6 +91,8 @@ class VisionSim {
   // flightmare vision environment
   flightlib::VisionEnv vision_env_;
   flightlib::FrameID frame_id_;
+
+  size_t num_detected_obstacles_;
 
   // -- Race tracks
   Vector<3> start_pos_;

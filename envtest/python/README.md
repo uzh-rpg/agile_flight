@@ -20,3 +20,9 @@ We provide a simple reinforcement learning code for you. Run the training via th
 cd agile_flight/envtest
 python3 -m python.run_vision_ppo --render 0 --train 1
 ```
+
+### About the RL environment
+
+### About the Python Binding 
+
+### About the RL Algorithm 
