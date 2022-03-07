@@ -36,6 +36,8 @@ class AgilePilot:
                                           queue_size=1, tcp_nodelay=True)
         self.odom_sub = rospy.Subscriber("/" + quad_name + "/agiros_pilot/state", QuadState, self.state_callback,
                                          queue_size=1, tcp_nodelay=True)
+        self.img_sub = rospy.Subscriber("/" + quad_name + "/agiros_pilot/state", Image, self.img_callback,
+                                        queue_size=1, tcp_nodelay=True)
 
         if self.ctrl_mode == "CTBR" or self.ctrl_mode == "SRT":
             self.cmd_pub = rospy.Publisher("/" + quad_name + "/agiros_pilot/feedthrough_command", Command, queue_size=1)
@@ -45,6 +47,7 @@ class AgilePilot:
 
     def img_callback(self, data):
         # TODO
+        print("Received image!")
         pass
 
     def state_callback(self, data):
@@ -83,9 +86,8 @@ class AgilePilot:
             cmd_msg.bodyrates.y = bodyrate_y
             cmd_msg.bodyrates.z = bodyrate_z
 
-            if not self.publish_commands:
-                return
-            self.cmd_pub.publish(cmd_msg)
+            if self.publish_commands:
+                self.cmd_pub.publish(cmd_msg)
         else:
             assert False, "unsupported control mode"
 

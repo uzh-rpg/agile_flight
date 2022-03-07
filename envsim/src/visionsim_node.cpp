@@ -38,7 +38,8 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   pnh_.getParam("use_bem_propeller_model", use_bem);
   pnh_.getParam("real_time_factor", real_time_factor_);
   pnh_.getParam("low_level_controller", low_level_ctrl);
-  const bool got_directory = pnh_.getParam("agi_param_dir", agi_param_directory_);
+  const bool got_directory =
+    pnh_.getParam("agi_param_dir", agi_param_directory_);
 
   if (use_bem) {
     std::shared_ptr<ModelPropellerBEM> bem_model =
@@ -61,7 +62,7 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   }
   simulator_.addModel(ModelRigidBody{quad_});
 
-  if(!  simulator_.setLowLevelController(low_level_ctrl)) {
+  if (!simulator_.setLowLevelController(low_level_ctrl)) {
     ROS_WARN("Could not set low level controller!");
   }
   std::shared_ptr<LowLevelControllerBase> low_level_ctrl_ptr =
@@ -225,11 +226,18 @@ void VisionSim::publishImages(const QuadState &state) {
   unity_quad->setState(unity_quad_state);
 
 
-  std::vector<std::shared_ptr<flightlib::StaticObject>> static_objects =
-    vision_env_.getObjects();
-  for (int i = 0; i < int(static_objects.size()); i++) {
-    static_objects[i]->run(0.02);
+  std::vector<std::shared_ptr<flightlib::UnityObject>> dynamic_objects =
+    vision_env_.getDynamicObjects();
+  for (int i = 0; i < int(dynamic_objects.size()); i++) {
+    dynamic_objects[i]->run(0.02);
   }
+
+  std::vector<std::shared_ptr<flightlib::UnityObject>> static_objects =
+    vision_env_.getStaticObjects();
+
+  std::cout << "Number of Dynamic Objects: " << dynamic_objects.size()
+            << ", Number of Static Objects : " << static_objects.size()
+            << std::endl;
 
   vision_env_.updateUnity(frame_id_);
 
