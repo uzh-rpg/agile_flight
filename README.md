@@ -76,3 +76,10 @@ python3 -m python.run_vision_demo --render 1
 ```
 
 Read [this](/envtest/python/README.md) to know more about how to use the code for Python and Reinforcement Learning. 
+
+
+## TODOs
+
+[] Double check the command code, which has caused some issues
+[] ROS launch file for RL policy
+
