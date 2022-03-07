@@ -23,14 +23,13 @@ else ()
     endif ()
 endif ()
 
-add_definitions(-DEIGEN_STACK_ALLOCATION_LIMIT=1048576)
 add_definitions(-Wall -Wextra -Wpedantic)
 # Setup General C++ Flags
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEIGEN_STACK_ALLOCATION_LIMIT=1048576")
 
 # Setup Release and Debug flags
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_ARCH_FLAGS} -fPIC -fsanitize=address")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_ARCH_FLAGS} -fPIC -fsanitize=address -O3 -Wall -DNDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -g")
 
 cs_add_executable(visionsim_node src/visionsim_node.cpp)

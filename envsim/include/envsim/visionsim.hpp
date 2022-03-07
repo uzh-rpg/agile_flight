@@ -27,10 +27,18 @@
 #include "agiros/ros_pilot.hpp"
 
 // flightlib
+#include "flightlib/bridges/unity_bridge.hpp"
+#include "flightlib/common/command.hpp"
+#include "flightlib/common/logger.hpp"
+#include "flightlib/common/quad_state.hpp"
+#include "flightlib/common/types.hpp"
+#include "flightlib/common/utils.hpp"
 #include "flightlib/envs/env_base.hpp"
 #include "flightlib/envs/quadrotor_env/quadrotor_env.hpp"
 #include "flightlib/envs/vision_env/vision_env.hpp"
-
+#include "flightlib/objects/quadrotor.hpp"
+#include "flightlib/objects/unity_object.hpp"
+#include "flightlib/sensors/rgb_camera.hpp"
 
 namespace agi {
 
@@ -81,8 +89,9 @@ class VisionSim {
   std::string ros_param_directory_;
 
   // flightmare vision environment
-  std::unique_ptr<flightlib::VisionEnv> vision_env_ptr_;
-  std::unique_ptr<flightlib::QuadrotorEnv> env_ptr_;
+  std::shared_ptr<flightlib::Quadrotor> quad_ptr_;
+  flightlib::Command cmd_;
+  // std::unique_ptr<flightlib::VisionEnv> vision_env_ptr_;
   flightlib::FrameID frame_id_;
 
   size_t num_detected_obstacles_;
