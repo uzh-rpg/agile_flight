@@ -11,7 +11,7 @@ This codebase provides the following functionalities:
 1. A simple high-level API to evaluate your navigation policy in the Robot Operating System (ROS). This is completely independent on how you develop your algorithm. 
 2. Training utilities to use reinforcement learning for the task of high-speed obstacle avoidance. 
 
-All evaluation during the competition will be performed using the same ROS evaluation, but on previously unseen environments / obstacle configurations!
+All evaluation during the competition will be performed using the same ROS evaluation, but on previously unseen environments / obstacle configurations.
 
 
 ## Flight API
@@ -65,20 +65,9 @@ Run the `setup_py.bash` in the main folder of this repository, it will ask for s
 ./setup_py.bash
 ```
 
-## Usage
+### Usage
 
-To test if the Flightmare simulator has been correctly installed as a python package, run vision demo script via the following command. 
-
-```
-cd agile_flight/envtest
-python3 -m python.run_vision_demo --render 1
-```
-
-Read [this](/envtest/python/README.md) to know more about how to use the code for Python and Reinforcement Learning. 
-
-### Training: TODO
-
-Which files should I work with? How do I start a training procedure? Where can I tune the reward?
+Follow [this guide](/envtest/python/README.md) to know more about how to use the training code.
 
 ### Testing: TODO
 
@@ -99,7 +88,6 @@ Also not yet clear how we get the information about the obstacles in ROS, which 
 ```
 TODO
 ```
-
 
 
 ## TODOs
