@@ -61,10 +61,12 @@ This file contains two functions, `compute_command_vision_based` and `compute_co
 
 **Testing your approach in the simulator:**
 
+Make sure you have completed the installation of the flight API before continuing.
 To use the competition software, three steps are required:
 1. Start the simulator
    ```
    roslaunch envsim visionenv_sim.launch render:=True
+   # Using the GUI, press Arm & Start to take off.
    ```
 2. Start your user code. This code will generate control commands based on the sensory observations. You can toggle vision-based operation by providing the argument `--vision_based`.
    ```
@@ -91,26 +93,6 @@ Run the `setup_py.bash` in the main folder of this repository, it will ask for s
 ### Usage
 
 Follow [this guide](/envtest/python/README.md) to know more about how to use the training code.
-
-### Testing: TODO
-
-(Antonio) How should I use this in the previously mentioned ROS installation? Added this below, but not sure how correct this is.
-
-
-Make sure you have completed the installation of the flight API before continuing.
-
-Start the simulation:
-```
-roslaunch envsim visionenv_sim.launch render:=True
-```
-
-Start the navigation code:
-
-I (Elia) started something in `envtest/ros/ros_test.py`. Not clear yet how to interface with trained policy from Yunlong?
-Also not yet clear how we get the information about the obstacles in ROS, which is needed for all non-vision-based approaches.
-```
-TODO
-```
 
 
 ## TODOs
