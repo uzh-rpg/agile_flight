@@ -44,25 +44,24 @@ class AgilePilotNode:
         self.linvel_pub = rospy.Publisher("/" + quad_name + "/agiros_pilot/velocity_command", TwistStamped,
                                           queue_size=1)
 
-    def img_callback(self, data):
+    def img_callback(self, img_data):
         if not self.vision_based:
             return
         if self.state is None:
             return
-        cv_image = self.cv_bridge.imgmsg_to_cv2(data, desired_encoding='passthrough')
+        cv_image = self.cv_bridge.imgmsg_to_cv2(img_data, desired_encoding='passthrough')
         command = compute_command_vision_based(self.state, cv_image)
         self.publish_command(command)
 
-    def state_callback(self, data):
-        self.state = AgileQuadState(data)
+    def state_callback(self, state_data):
+        self.state = AgileQuadState(state_data)
 
-    def obstacle_callback(self, data):
+    def obstacle_callback(self, obs_data):
         if self.vision_based:
             return
         if self.state is None:
             return
-        obstacles = None
-        command = compute_command_state_based(state=self.state, obstacles=obstacles)
+        command = compute_command_state_based(state=self.state, obstacles=obs_data)
         self.publish_command(command)
 
     def publish_command(self, command):
