@@ -48,7 +48,7 @@ def compute_command_state_based(state, obstacles):
     ################################################
     print("Computing command based on obstacle information!")
     print(state)
-    print("Obstacles: ", obstacles)
+    # print("Obstacles: ", obstacles)
 
     # Example of SRT command
     command_mode = 0
@@ -72,7 +72,7 @@ def compute_command_state_based(state, obstacles):
 
     # If you want to test your RL policy
     command = rl_example(state, obstacles)
-
+ 
     ################################################
     # !!! End of user code !!!
     ################################################

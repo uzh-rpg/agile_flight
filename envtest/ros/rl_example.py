@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import os
 import torch
 import numpy as np
 
@@ -54,12 +55,13 @@ def rl_example(state, obstacles):
 
     # constructe observation and perform normalization
     obs = np.concatenate([
-        delta_goal, rotation_matrix, state.vel, state.omega, obs_vec], axis=0).astype(np.float32) 
+        delta_goal, rotation_matrix, state.vel, state.omega, obs_vec], axis=0).astype(np.float32)
+    obs = obs.reshape(-1, obs.shape[0])
     norm_obs = normalize_obs(obs, obs_mean, obs_var)
 
     #  compute action
-    obs = torch.as_tensor(obs).to(device)
-    action = policy(norm_obs).detach().cpu().numpy()
+    obs = torch.as_tensor(norm_obs).to(device)
+    action = policy(obs).detach().cpu().numpy()
     action = (action * act_std + act_mean)[0, :]
 
     command_mode = 1
@@ -71,7 +73,8 @@ def rl_example(state, obstacles):
     return command
 
 def load_rl_policy():
-    ppo_dir = "/home/yunlong/Projects/ws_agile/src/agile_flight/envtest/python/saved/PPO_3"
+    rsg_root = os.path.dirname(os.path.abspath(__file__))
+    ppo_dir = rsg_root + "/saved/PPO_1"
     policy_dir = ppo_dir + "/Policy/iter_00100.pth" 
     rms_dir = ppo_dir + "/RMS/iter_00100.npz" 
     cfg_dir =  ppo_dir + "/config.yaml"
