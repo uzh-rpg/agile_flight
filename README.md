@@ -67,6 +67,7 @@ To use the competition software, three steps are required:
    ```
    roslaunch envsim visionenv_sim.launch render:=True
    # Using the GUI, press Arm & Start to take off.
+   python evaluation_node.py
    ```
 2. Start your user code. This code will generate control commands based on the sensory observations. You can toggle vision-based operation by providing the argument `--vision_based`.
    ```
