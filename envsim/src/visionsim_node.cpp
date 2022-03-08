@@ -245,15 +245,16 @@ void VisionSim::publishObstacles(const QuadState &state) {
   obstacle_msg.num = vision_env_ptr_->getNumDetectedObstacles();
 
   flightlib::Vector<> obstacle_state;
-  obstacle_state.resize(4 * obstacle_msg.num);
+  const int obstacle_obs_dim = 4;
+  obstacle_state.resize(obstacle_obs_dim * obstacle_msg.num);
   vision_env_ptr_->getObstacleState(obstacle_state);
 
   for (int i = 0; i < obstacle_msg.num; i++) {
     envsim_msgs::Obstacle single_obstacle;
-    single_obstacle.position.x = obstacle_state[4 * i];
-    single_obstacle.position.x = obstacle_state[4 * i + 1];
-    single_obstacle.position.x = obstacle_state[4 * i + 2];
-    single_obstacle.scale = obstacle_state[4 * i + 3];
+    single_obstacle.position.x = obstacle_state[obstacle_obs_dim * i];
+    single_obstacle.position.y = obstacle_state[obstacle_obs_dim * i + 1];
+    single_obstacle.position.z = obstacle_state[obstacle_obs_dim * i + 2];
+    single_obstacle.scale = obstacle_state[obstacle_obs_dim * i + 3];
 
     obstacle_msg.obstacles.push_back(single_obstacle);
   }
