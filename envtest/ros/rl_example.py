@@ -37,7 +37,7 @@ def normalize_obs(obs, obs_mean, obs_var):
     return (obs - obs_mean) / np.sqrt(obs_var + 1e-8)
 
 def rl_example(state, obstacles):
-    policy, obs_mean, obs_var, act_mean, act_std, device = load_rl_policy()
+    global policy, obs_mean, obs_var, act_mean, act_std, device
     # Convert obstacles to vector observation
     obs_vec = []
     for obstacle in obstacles.obstacles:
@@ -52,6 +52,8 @@ def rl_example(state, obstacles):
     delta_goal = state.pos - goal_pos
     att_aray = np.array([state.att[1], state.att[2], state.att[3], state.att[0]])
     rotation_matrix = R.from_quat(att_aray).as_matrix().reshape((9,), order="F")
+
+        # 
 
     # constructe observation and perform normalization
     obs = np.concatenate([
@@ -74,7 +76,7 @@ def rl_example(state, obstacles):
 
 def load_rl_policy():
     rsg_root = os.path.dirname(os.path.abspath(__file__))
-    ppo_dir = rsg_root + "/saved/PPO_1"
+    ppo_dir = rsg_root + "/rl_policy/PPO_1"
     policy_dir = ppo_dir + "/Policy/iter_00100.pth" 
     rms_dir = ppo_dir + "/RMS/iter_00100.npz" 
     cfg_dir =  ppo_dir + "/config.yaml"
@@ -109,3 +111,5 @@ def load_rl_policy():
     dummy_inputs = torch.rand(1, obs_dim, device=device)
     policy = torch.jit.trace(policy, dummy_inputs)
     return policy, obs_mean, obs_var, act_mean, act_std, device
+
+policy, obs_mean, obs_var, act_mean, act_std, device = load_rl_policy()
