@@ -11,7 +11,6 @@
 
 #include <filesystem>
 
-#include "std_msgs/Float32MultiArray.h"
 #include "std_msgs/String.h"
 
 // -- agilicious
@@ -80,8 +79,6 @@ class VisionSim {
   // flightmare vision environment
   std::unique_ptr<flightlib::VisionEnv> vision_env_ptr_;
   flightlib::FrameID frame_id_;
-
-  int num_detected_obstacles_;
 
   // -- Race tracks
   Vector<3> start_pos_;

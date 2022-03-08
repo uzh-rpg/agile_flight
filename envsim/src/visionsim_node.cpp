@@ -2,6 +2,7 @@
 
 #include "agiros_msgs/QuadState.h"
 #include "envsim/visionsim.hpp"
+#include "envsim_msgs/ObstacleArray.h"
 #include "nav_msgs/Odometry.h"
 #include "rosgraph_msgs/Clock.h"
 
@@ -22,7 +23,7 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   image_transport::ImageTransport it(pnh_);
 
   obstacle_pub_ =
-    pnh_.advertise<std_msgs::Float32MultiArray>("groundtruth/obstacles", 1);
+    pnh_.advertise<envsim_msgs::ObstacleArray>("groundtruth/obstacles", 1);
 
   image_pub_ = it.advertise("unity/image", 1);
   depth_pub_ = it.advertise("unity/depth", 1);
@@ -238,19 +239,25 @@ void VisionSim::publishObstacles(const QuadState &state) {
 
   vision_env_ptr_->getQuadrotor()->setState(unity_quad_state);
 
-  //
-  std_msgs::Float32MultiArray msg_obstacle_state;
-  num_detected_obstacles_ = vision_env_ptr_->getNumDetectedObstacles();
+  envsim_msgs::ObstacleArray obstacle_msg;
+  obstacle_msg.header.stamp = ros::Time(state.t);
+  obstacle_msg.t = state.t;
+  obstacle_msg.num = vision_env_ptr_->getNumDetectedObstacles();
 
   flightlib::Vector<> obstacle_state;
-  obstacle_state.resize(3 * num_detected_obstacles_);
+  obstacle_state.resize(4 * obstacle_msg.num);
   vision_env_ptr_->getObstacleState(obstacle_state);
 
+  for (int i = 0; i < obstacle_msg.num; i++) {
+    envsim_msgs::Obstacle single_obstacle;
+    single_obstacle.position.x = obstacle_state[4 * i];
+    single_obstacle.position.x = obstacle_state[4 * i + 1];
+    single_obstacle.position.x = obstacle_state[4 * i + 2];
+    single_obstacle.scale = obstacle_state[4 * i + 3];
 
-  for (int i = 0; i < obstacle_state.size(); i++) {
-    msg_obstacle_state.data.push_back(obstacle_state[i]);
+    obstacle_msg.obstacles.push_back(single_obstacle);
   }
-  obstacle_pub_.publish(msg_obstacle_state);
+  obstacle_pub_.publish(obstacle_msg);
 }
 
 
