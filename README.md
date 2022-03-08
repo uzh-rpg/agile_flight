@@ -56,8 +56,8 @@ The usage of this code base entails two main aspects: writing your algorithm and
 
 **Writing your algorithm:**
 
-To facilitate coding of your algorithms, we provided a simple code structure for you, just edit the following file: `envtest/ros/user_code.py`. 
-This file contains two functions, `compute_command_vision_based` and `compute_command_state_based`. Depending on the part of the competition you are interested in, adapt the corresponding function. To immediately see something moving, both functions at the moment publish a command to fly straight forward, of course without avoiding any obstacles. Note that we provide three different control modes for you, ordered with increasing level of abstraction: commanding individual single-rotor thrusts (SRT), specifying mas-normalized collective thrust and bodyrates (CTBR), and outputting linear velocity commands and yawrate (LINVEL). The choice of control modality is up to you.
+To facilitate coding of your algorithms, we provided a simple code structure for you, just edit the following file: [envtest/ros/user_code.py](https://github.com/uzh-rpg/agile_flight/blob/main/envtest/ros/user_code.py). 
+This file contains two functions, [compute_command_vision_based](https://github.com/uzh-rpg/agile_flight/blob/main/envtest/ros/user_code.py#L8) and [compute_command_state_based](https://github.com/uzh-rpg/agile_flight/blob/main/envtest/ros/user_code.py#L44). Depending on the part of the competition you are interested in, adapt the corresponding function. To immediately see something moving, both functions at the moment publish a command to fly straight forward, of course without avoiding any obstacles. Note that we provide three different control modes for you, ordered with increasing level of abstraction: commanding individual single-rotor thrusts (SRT), specifying mas-normalized collective thrust and bodyrates (CTBR), and outputting linear velocity commands and yawrate (LINVEL). The choice of control modality is up to you.
 
 **Testing your approach in the simulator:**
 
