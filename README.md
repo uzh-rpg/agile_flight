@@ -51,9 +51,35 @@ Run the `setup_ros.bash` in the main folder of this repository, it will ask for 
 catkin build
 ```
 
-### Usage: TODO
+### Usage
+The usage of this code base entails two main aspects: writing your algorithm and testing it in the simulator. 
 
-TODO: How can I use this? Is there some form of documentation?
+**Writing your algorithm:**
+
+To facilitate coding of your algorithms, we provided a simple code structure for you, just edit the following file: `envtest/ros/user_code.py`. 
+This file contains two functions, `compute_command_vision_based` and `compute_command_state_based`. Depending on the part of the competition you are interested in, adapt the corresponding function. To immediately see something moving, both functions at the moment publish a command to fly straight forward, of course without avoiding any obstacles. Note that we provide three different control modes for you, ordered with increasing level of abstraction: commanding individual single-rotor thrusts (SRT), specifying mas-normalized collective thrust and bodyrates (CTBR), and outputting linear velocity commands and yawrate (LINVEL). The choice of control modality is up to you.
+
+**Testing your approach in the simulator:**
+
+Make sure you have completed the installation of the flight API before continuing.
+To use the competition software, three steps are required:
+1. Start the simulator
+   ```
+   roslaunch envsim visionenv_sim.launch render:=True
+   # Using the GUI, press Arm & Start to take off.
+   ```
+2. Start your user code. This code will generate control commands based on the sensory observations. You can toggle vision-based operation by providing the argument `--vision_based`.
+   ```
+   cd envtest/ros
+   python run_competition.py [--vision_based]
+   ```
+3. Tell your code to start! Until you publish this message, your code will run but the commands will not be executed. We use this to ensure fair comparison between approaches as code startup times can vary, especially for learning-based approaches.
+   ```
+   rostopic pub /kingfisher/start_navigation std_msgs/Empty "{}" -1
+   ```
+
+TODO: we probably should prepare some bash scripts to automate parts of this...
+TODO: we also need some automatic evaluation script, i.e. something that measures time and number of collisions or so
 
 ## Training (Optional)
 We also provide an easy interface for training your navigation policy using RL. While this is not required to compete, it could just make your job easier if you plan on using RL.
@@ -68,26 +94,6 @@ Run the `setup_py.bash` in the main folder of this repository, it will ask for s
 ### Usage
 
 Follow [this guide](/envtest/python/README.md) to know more about how to use the training code.
-
-### Testing: TODO
-
-(Antonio) How should I use this in the previously mentioned ROS installation? Added this below, but not sure how correct this is.
-
-
-Make sure you have completed the installation of the flight API before continuing.
-
-Start the simulation:
-```
-roslaunch envsim visionenv_sim.launch render:=True
-```
-
-Start the navigation code:
-
-I (Elia) started something in `envtest/ros/ros_test.py`. Not clear yet how to interface with trained policy from Yunlong?
-Also not yet clear how we get the information about the obstacles in ROS, which is needed for all non-vision-based approaches.
-```
-TODO
-```
 
 
 ## TODOs
