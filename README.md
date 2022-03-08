@@ -1,6 +1,6 @@
 # DodgeDrone: Vision-based Agile Drone Flight (ICRA22 Competition)
 
-[IMAGE ALT TEXT HERE](https://uzh-rpg.github.io/icra2022-dodgedrone/assets/intro_image.png)
+![Intro](https://uzh-rpg.github.io/icra2022-dodgedrone/assets/intro_image.png)
 
 This repository holds the code for the ICRA22 competition on autonomous agile obstacle avoidance developed by the Robotics and Perception Group.
 Use this code to design your own algorithms for high-speed obstacle avoidance and compare it with others!
