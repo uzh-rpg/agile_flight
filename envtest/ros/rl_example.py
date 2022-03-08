@@ -7,7 +7,7 @@ from utils import AgileCommand
 def rl_example(state, obstacles):
     # Convert obstacles to vector observation
     obs_vec = []
-    for obstacle in obstacles:
+    for obstacle in obstacles.obstacles:
         obs_vec.append(obstacle.position.x)
         obs_vec.append(obstacle.position.y)
         obs_vec.append(obstacle.position.z)
