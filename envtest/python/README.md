@@ -30,3 +30,7 @@ python3 -m python.run_vision_ppo --render 0 --train 1
 ### About the Python Binding 
 
 ### About the RL Algorithm 
+
+## Policy Evaluation in ROS
+
+Follow the steps on [this guide](https://github.com/uzh-rpg/agile_flight/blob/main/README.md#testing-todo) to evaluate your policies with our flight stack API.
