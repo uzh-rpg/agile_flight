@@ -79,6 +79,7 @@ To use the competition software, three steps are required:
    ```
 
 TODO: we probably should prepare some bash scripts to automate parts of this...
+TODO: we also need some automatic evaluation script, i.e. something that measures time and number of collisions or so
 
 ## Training (Optional)
 We also provide an easy interface for training your navigation policy using RL. While this is not required to compete, it could just make your job easier if you plan on using RL.
