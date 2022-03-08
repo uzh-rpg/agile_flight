@@ -13,7 +13,7 @@ git submodule update --init --recursive
 echo "Using apt to install dependencies..."
 echo "Will ask for sudo permissions:"
 sudo apt update
-sudo apt install -y --no-install-recommends build-essential cmake libzmqpp-dev libopencv-dev unzip
+sudo apt install -y --no-install-recommends build-essential cmake libzmqpp-dev libopencv-dev unzip python3-catkin-tools
 sudo pip install gdown
 
 echo "Ignoring unused Flightmare folders!"
@@ -25,7 +25,7 @@ unzip FlightmareSimple.zip -d flightmare/flightrender
 rm FlightmareSimple.zip
 
 
-curl --show-error --progress-bar --location "https://github.com/uzh-rpg/flightmare/releases/download/0.0.5/RPG_Flightmare.tar.xz" | tar Jxf - -C flightmare/flightrender/ --strip 1
+#curl --show-error --progress-bar --location "https://github.com/uzh-rpg/flightmare/releases/download/0.0.5/RPG_Flightmare.tar.xz" | tar Jxf - -C flightmare/flightrender/ --strip 1
 
 echo "Setting the flightmare environment variable. Please add 'export FLIGHTMARE_PATH=$PWD/flightmare' to your .bashrc!"
 export FLIGHTMARE_PATH=$PWD/flightmare
