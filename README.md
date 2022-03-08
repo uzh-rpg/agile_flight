@@ -1,4 +1,6 @@
-# Agile Flight
+# DodgeDrone: Vision-based Agile Drone Flight (ICRA22 Competition)
+
+[IMAGE ALT TEXT HERE](https://uzh-rpg.github.io/icra2022-dodgedrone/assets/intro_image.png)
 
 This repository holds the code for the ICRA22 competition on autonomous agile obstacle avoidance developed by the Robotics and Perception Group.
 Use this code to design your own algorithms for high-speed obstacle avoidance and compare it with others!
@@ -11,11 +13,19 @@ All evaluation during the competition will be performed using the same ROS evalu
 
 
 
-## Installation with ROS
-You need to install this to run the evaluation. If you only want to train algorithms using reinforcement learning without evaluation, you can skip this step.
+## Evaluation (ROS)
+
+This library contains the core of our testing API. It will be used for evaluating all submitted policies. The API is completely independent on how you build your navigation system. You could either use our reinforcement learning interface (more on this below) or add your favourite navigation system.
+
+### Prerequisite
+Before continuing, make sure to have g++ and gcc to version 9.3.0. You can check this by typing in a terminal `gcc --version` and `g++ --version`. Follow [this guide](https://linuxize.com/post/how-to-install-gcc-compiler-on-ubuntu-18-04/) if your compiler is not compatible.
+
+In addition, make sure to have ROS installed. Follow [this guide](http://wiki.ros.org/noetic/Installation/Ubuntu) and install ROS Noetic if you don't already have it.
+
+### Installation
 We only support Ubuntu 20.04 with ROS noetic. Other setups are likely to work as well but not actively supported.
 
-Create a new catkin workspace. 
+Start by creating a new catkin workspace. 
 ```
 cd     # or wherever you'd like to install this code
 export ROS_VERSION=noetic
@@ -32,7 +42,7 @@ git clone git@github.com:uzh-rpg/agile_flight.git
 cd agile_flight
 ```
 
-Run the `setup_ros.bash` in the main folder of this repository, it will ask for sudo permissions.
+Run the `setup_ros.bash` in the main folder of this repository, it will ask for sudo permissions. Then build the packages.
 
 ```bash
 ./setup_ros.bash
@@ -40,7 +50,7 @@ Run the `setup_ros.bash` in the main folder of this repository, it will ask for 
 catkin build
 ```
 
-## Installation wtih Python 
+## Training (Python - Optional)
 If you want to train a learning-based obstacle avoidance policy using Python, you can use our training utilities for this! 
 Run the `setup_py.bash` in the main folder of this repository, it will ask for sudo permissions.
 
