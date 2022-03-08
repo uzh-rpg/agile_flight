@@ -1,5 +1,4 @@
-# DodgeDrone: Vision-based Agile Drone Flight
-## ICRA22 Competition)
+# DodgeDrone: Vision-based Agile Drone Flight (ICRA 2022 Competition)
 
 ![Intro](https://uzh-rpg.github.io/icra2022-dodgedrone/assets/intro_image.png)
 
