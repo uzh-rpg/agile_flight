@@ -56,9 +56,9 @@ def rl_example(state, obstacles):
 
 def load_rl_policy():
     rsg_root = os.path.dirname(os.path.abspath(__file__))
-    ppo_dir = rsg_root + "/rl_policy/PPO_1"
-    policy_dir = ppo_dir + "/Policy/iter_00800.pth" 
-    rms_dir = ppo_dir + "/RMS/iter_00800.npz" 
+    ppo_dir = rsg_root + "/rl_policy/PPO_3"
+    policy_dir = ppo_dir + "/Policy/iter_00400.pth" 
+    rms_dir = ppo_dir + "/RMS/iter_00400.npz" 
     cfg_dir =  ppo_dir + "/config.yaml"
 
     # action 

@@ -71,11 +71,8 @@ def compute_command_state_based(state, obstacles):
     command.yawrate = 0.0
 
     # If you want to test your RL policy
-    # command = rl_example(state, obstacles)
-<<<<<<< HEAD
-=======
+    command = rl_example(state, obstacles)
 
->>>>>>> 9ab06636c116837f7569d52447f78c125529225c
     ################################################
     # !!! End of user code !!!
     ################################################

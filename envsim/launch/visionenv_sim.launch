@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <launch>
     <arg name="quad_name" default="blackbird"/>
-    <arg name="use_bem_propeller_model" default="False"/>
+    <arg name="use_bem_propeller_model" default="True"/>
     <arg name="low_level_controller" default="Simple"/>
     <arg name="render" default="False"/>
     <param name="/use_sim_time" value="True"/>
-    <arg name="real_time_factor" value="0.3"/>
+    <arg name="real_time_factor" value="1.0"/>
     <arg name="gui" default="True"/>
     <arg name="rviz" default="True"/>
 
