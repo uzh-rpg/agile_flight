@@ -56,8 +56,14 @@ The usage of this code base entails two main aspects: writing your algorithm and
 
 **Writing your algorithm:**
 
-To facilitate coding of your algorithms, we provided a simple code structure for you, just edit the following file: `envtest/ros/user_code.py`. 
-This file contains two functions, `compute_command_vision_based` and `compute_command_state_based`. Depending on the part of the competition you are interested in, adapt the corresponding function. To immediately see something moving, both functions at the moment publish a command to fly straight forward, of course without avoiding any obstacles. Note that we provide three different control modes for you, ordered with increasing level of abstraction: commanding individual single-rotor thrusts (SRT), specifying mas-normalized collective thrust and bodyrates (CTBR), and outputting linear velocity commands and yawrate (LINVEL). The choice of control modality is up to you.
+To facilitate coding of your algorithms, we provided a simple code structure for you, just edit the following file: [envtest/ros/user_code.py](https://github.com/uzh-rpg/agile_flight/blob/main/envtest/ros/user_code.py). 
+This file contains two functions, [compute_command_vision_based](https://github.com/uzh-rpg/agile_flight/blob/main/envtest/ros/user_code.py#L8) and [compute_command_state_based](https://github.com/uzh-rpg/agile_flight/blob/main/envtest/ros/user_code.py#L44).
+In he vision-based case, you will get the current image and state of the quadrotor. In the state-based case, you will get the metric distance to obstacles and the state of the quadrotor. We strongly reccomend using the state-based version to start with, it is going to be much easier than working with pixels!
+
+Depending on the part of the competition you are interested in, adapt the corresponding function.
+To immediately see something moving, both functions at the moment publish a command to fly straight forward, of course without avoiding any obstacles.
+Note that we provide three different control modes for you, ordered with increasing level of abstraction: commanding individual single-rotor thrusts (SRT), specifying mas-normalized collective thrust and bodyrates (CTBR), and outputting linear velocity commands and yawrate (LINVEL). The choice of control modality is up to you.
+Overall, the more low-level you go, the more difficult is going to be to mantain stability, but the more agile your drone will be.
 
 **Testing your approach in the simulator:**
 
@@ -67,6 +73,7 @@ To use the competition software, three steps are required:
    ```
    roslaunch envsim visionenv_sim.launch render:=True
    # Using the GUI, press Arm & Start to take off.
+   python evaluation_node.py
    ```
 2. Start your user code. This code will generate control commands based on the sensory observations. You can toggle vision-based operation by providing the argument `--vision_based`.
    ```
@@ -80,6 +87,7 @@ To use the competition software, three steps are required:
 
 TODO: we probably should prepare some bash scripts to automate parts of this...
 TODO: we also need some automatic evaluation script, i.e. something that measures time and number of collisions or so
+TODO: we need to provide a conda install file or a requirements.txt to install python dependencies.
 
 ## Training (Optional)
 We also provide an easy interface for training your navigation policy using RL. While this is not required to compete, it could just make your job easier if you plan on using RL.

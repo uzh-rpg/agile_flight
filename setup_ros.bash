@@ -15,6 +15,7 @@ echo "Will ask for sudo permissions:"
 sudo apt update
 sudo apt install -y --no-install-recommends build-essential cmake libzmqpp-dev libopencv-dev unzip python3-catkin-tools
 sudo pip install gdown
+sudo pip install uniplot
 
 echo "Ignoring unused Flightmare folders!"
 touch flightmare/flightros/CATKIN_IGNORE

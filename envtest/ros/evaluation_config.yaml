@@ -1,0 +1,13 @@
+topics:
+  quad_name: "kingfisher"
+  state: "agiros_pilot/state"
+  obstacles: "agiros_pilot/groundtruth/obstacles"
+  start: "start_navigation"
+  finish: "finish_navigation"
+
+target: 60 # must be INTEGER
+timeout: 30
+bounding_box: [-5, 65, -10, 10, 0, 10]
+
+# if you really don't want the cool plots, put this to False
+plots: True
