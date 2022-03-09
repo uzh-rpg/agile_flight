@@ -55,12 +55,12 @@ def compute_command_state_based(state, obstacles):
     command = AgileCommand(command_mode)
     command.t = state.t
     command.rotor_thrusts = [1.0, 1.0, 1.0, 1.0]
-
+ 
     # Example of CTBR command
     command_mode = 1
     command = AgileCommand(command_mode)
     command.t = state.t
-    command.collective_thrust = 15.0
+    command.collective_thrust = 10.0
     command.bodyrates = [0.0, 0.0, 0.0]
 
     # Example of LINVEL command (velocity is expressed in world frame)
@@ -71,8 +71,7 @@ def compute_command_state_based(state, obstacles):
     command.yawrate = 0.0
 
     # If you want to test your RL policy
-    command = rl_example(state, obstacles)
- 
+    # command = rl_example(state, obstacles)
     ################################################
     # !!! End of user code !!!
     ################################################

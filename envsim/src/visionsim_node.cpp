@@ -31,6 +31,7 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
 
   ros_pilot_.getQuadrotor(&quad_);
   simulator_.updateQuad(quad_);
+  std::cout << quad_ << std::endl;
   simulator_.addModel(ModelInit{quad_});
   simulator_.addModel(ModelMotor{quad_});
 

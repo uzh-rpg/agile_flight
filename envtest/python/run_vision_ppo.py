@@ -96,7 +96,7 @@ def main():
         )
 
         #
-        model.learn(total_timesteps=int(1e7), log_interval=(10, 50))
+        model.learn(total_timesteps=int(2 * 1e7), log_interval=(10, 50))
     else:
         os.system(os.environ["FLIGHTMARE_PATH"] + "/flightrender/RPG_Flightmare.x86_64 &")
         #
@@ -112,7 +112,7 @@ def main():
         # Load weights
         policy.load_state_dict(saved_variables["state_dict"], strict=False)
         policy.to(device)
-
+        # 
         eval_env.load_rms(env_rms)
         test_policy(eval_env, policy, render=args.render)
 

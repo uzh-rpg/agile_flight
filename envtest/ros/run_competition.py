@@ -24,7 +24,8 @@ class AgilePilotNode:
         self.cv_bridge = CvBridge()
         self.state = None
 
-        quad_name = 'kingfisher'
+        # quad_name = 'kingfisher'
+        quad_name = 'blackbird'
 
         # Logic subscribers
         self.start_sub = rospy.Subscriber("/" + quad_name + "/start_navigation", Empty, self.start_callback,

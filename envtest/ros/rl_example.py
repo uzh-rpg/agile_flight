@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import os
+
 import torch
 import numpy as np
 
@@ -13,31 +14,11 @@ from scipy.spatial.transform import Rotation as R
 from stable_baselines3.common.utils import get_device
 from stable_baselines3.ppo.policies import MlpPolicy
 
-class RPGMlpPolicy(torch.nn.Module):
-
-    def __init__(self, save_variables, device):
-        super(RPGMlpPolicy, self).__init__()
-        self.policy = MlpPolicy(**save_variables)
-        self.policy.action_net = torch.nn.Sequential(self.policy.action_net,
-                                                     torch.nn.Tanh())
-        self.device = device
-    
-    def __call__(self, obs: torch.Tensor) -> torch.Tensor:
-        return self.forward(obs)
-
-    def load_weights(self, state_dict):
-        self.policy.load_state_dict(state_dict, strict=False)
-        self.policy.to(device=self.device)
-
-    def forward(self, obs: torch.Tensor):
-        return self.policy._predict(obs, deterministic=True)
-        
-
 def normalize_obs(obs, obs_mean, obs_var):
     return (obs - obs_mean) / np.sqrt(obs_var + 1e-8)
 
 def rl_example(state, obstacles):
-    global policy, obs_mean, obs_var, act_mean, act_std, device
+    global policy, obs_mean, obs_var, act_mean, act_std
     # Convert obstacles to vector observation
     obs_vec = []
     for obstacle in obstacles.obstacles:
@@ -48,22 +29,20 @@ def rl_example(state, obstacles):
     obs_vec = np.array(obs_vec)
 
     # Convert state to vector observation
-    goal_pos = np.array([80.0, 0.0, 0.0]) 
+    goal_pos = np.array([0.0, 0.0, 5.0]) 
     delta_goal = state.pos - goal_pos
     att_aray = np.array([state.att[1], state.att[2], state.att[3], state.att[0]])
     rotation_matrix = R.from_quat(att_aray).as_matrix().reshape((9,), order="F")
 
-        # 
-
     # constructe observation and perform normalization
     obs = np.concatenate([
-        delta_goal, rotation_matrix, state.vel, state.omega, obs_vec], axis=0).astype(np.float32)
+        delta_goal, rotation_matrix, state.vel, obs_vec], axis=0).astype(np.float64)
+    obs = np.concatenate([
+        delta_goal, rotation_matrix, state.vel], axis=0).astype(np.float64)
     obs = obs.reshape(-1, obs.shape[0])
     norm_obs = normalize_obs(obs, obs_mean, obs_var)
-
     #  compute action
-    obs = torch.as_tensor(norm_obs).to(device)
-    action = policy(obs).detach().cpu().numpy()
+    action, _ = policy.predict(norm_obs, deterministic=True)
     action = (action * act_std + act_mean)[0, :]
 
     command_mode = 1
@@ -72,13 +51,14 @@ def rl_example(state, obstacles):
     command.collective_thrust = action[0] 
     command.bodyrates = action[1:4] 
 
+
     return command
 
 def load_rl_policy():
     rsg_root = os.path.dirname(os.path.abspath(__file__))
     ppo_dir = rsg_root + "/rl_policy/PPO_1"
-    policy_dir = ppo_dir + "/Policy/iter_00100.pth" 
-    rms_dir = ppo_dir + "/RMS/iter_00100.npz" 
+    policy_dir = ppo_dir + "/Policy/iter_00800.pth" 
+    rms_dir = ppo_dir + "/RMS/iter_00800.npz" 
     cfg_dir =  ppo_dir + "/config.yaml"
 
     # action 
@@ -90,26 +70,23 @@ def load_rl_policy():
         env_cfg["quadrotor_dynamics"]["motor_omega_max"]
     act_mean = np.array([thrust_max / quad_mass / 2, 0.0, 0.0, 0.0])[np.newaxis, :] 
     act_std = np.array([thrust_max / quad_mass / 2, \
-       omega_max[0], omega_max[1], omega_max[1]])[np.newaxis, :] 
-
+       omega_max[0], omega_max[1], omega_max[2]])[np.newaxis, :] 
 
     rms_data = np.load(rms_dir)
     obs_mean = np.mean(rms_data["mean"], axis=0)
-    obs_var = np.mean(rms_data["var"], axis=0 )
+    obs_var = np.mean(rms_data["var"], axis=0)
 
-    device = get_device("cpu")
-
-    # -- load saved varaiables 
+    # # -- load saved varaiables 
+    device = get_device("auto")
     saved_variables = torch.load(policy_dir, map_location=device)
-    obs_dim  = saved_variables["data"]["observation_space"].shape[0]
+    # Create policy object
+    policy = MlpPolicy(**saved_variables["data"])
+    #
+    policy.action_net = torch.nn.Sequential(policy.action_net, torch.nn.Tanh())
+    # Load weights
+    policy.load_state_dict(saved_variables["state_dict"], strict=False)
+    policy.to(device)
 
-    # create policy
-    policy = RPGMlpPolicy(saved_variables["data"], device)
-    policy.load_weights(saved_variables["state_dict"])
+    return policy, obs_mean, obs_var, act_mean, act_std
 
-    # policy just in time compliation
-    dummy_inputs = torch.rand(1, obs_dim, device=device)
-    policy = torch.jit.trace(policy, dummy_inputs)
-    return policy, obs_mean, obs_var, act_mean, act_std, device
-
-policy, obs_mean, obs_var, act_mean, act_std, device = load_rl_policy()
+policy, obs_mean, obs_var, act_mean, act_std = load_rl_policy()
