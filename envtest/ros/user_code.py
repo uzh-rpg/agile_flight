@@ -11,8 +11,8 @@ def compute_command_vision_based(state, img):
     # TODO: populate the command message
     ################################################
     print("Computing command vision-based!")
-    print("State: ", state)
-    print("Image shape: ", img.shape)
+    # print(state)
+    # print("Image shape: ", img.shape)
 
     # Example of SRT command
     command_mode = 0
@@ -47,7 +47,7 @@ def compute_command_state_based(state, obstacles):
     # TODO: populate the command message
     ################################################
     print("Computing command based on obstacle information!")
-    print(state)
+    # print(state)
     # print("Obstacles: ", obstacles)
 
     # Example of SRT command
@@ -72,7 +72,7 @@ def compute_command_state_based(state, obstacles):
 
     # If you want to test your RL policy
     # command = rl_example(state, obstacles)
- 
+
     ################################################
     # !!! End of user code !!!
     ################################################
