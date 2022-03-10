@@ -32,13 +32,19 @@ def rl_example(state, obstacles):
     goal_pos = np.array([0.0, 0.0, 5.0]) 
     delta_goal = state.pos - goal_pos
     att_aray = np.array([state.att[1], state.att[2], state.att[3], state.att[0]])
+    # att_aray = np.array([ -0.8250897, -0.4162377, 0.3725094, -0.0849108 ])
     rotation_matrix = R.from_quat(att_aray).as_matrix().reshape((9,), order="F")
 
     # constructe observation and perform normalization
     obs = np.concatenate([
         delta_goal, rotation_matrix, state.vel, obs_vec], axis=0).astype(np.float64)
+
+
+    # obs = np.concatenate([
+    #     delta_goal, rotation_matrix, state.vel, state.omega], axis=0).astype(np.float64)
     obs = np.concatenate([
         delta_goal, rotation_matrix, state.vel], axis=0).astype(np.float64)
+
     obs = obs.reshape(-1, obs.shape[0])
     norm_obs = normalize_obs(obs, obs_mean, obs_var)
     #  compute action
@@ -56,9 +62,9 @@ def rl_example(state, obstacles):
 
 def load_rl_policy():
     rsg_root = os.path.dirname(os.path.abspath(__file__))
-    ppo_dir = rsg_root + "/rl_policy/PPO_3"
-    policy_dir = ppo_dir + "/Policy/iter_00400.pth" 
-    rms_dir = ppo_dir + "/RMS/iter_00400.npz" 
+    ppo_dir = rsg_root + "/rl_policy/PPO_9"
+    policy_dir = ppo_dir + "/Policy/iter_00300.pth" 
+    rms_dir = ppo_dir + "/RMS/iter_00300.npz" 
     cfg_dir =  ppo_dir + "/config.yaml"
 
     # action 
