@@ -133,7 +133,6 @@ dependencies:
     - google-auth-oauthlib==0.4.6
     - google-pasta==0.2.0
     - grpcio==1.42.0
-    - gym==0.21.0
     - h5py==2.10.0
     - idna==3.3
     - importlib-metadata==4.8.2
