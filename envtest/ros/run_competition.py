@@ -10,16 +10,18 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Empty
 
 from envsim_msgs.msg import ObstacleArray
+from rl_example import load_rl_policy
 from user_code import compute_command_vision_based, compute_command_state_based
 from utils import AgileCommandMode, AgileQuadState
 
 
 class AgilePilotNode:
-    def __init__(self, vision_based=False):
+    def __init__(self, vision_based=False, ppo_path=None):
         print("Initializing agile_pilot_node...")
         rospy.init_node('agile_pilot_node', anonymous=False)
 
         self.vision_based = vision_based
+        self.ppo_path = ppo_path 
         self.publish_commands = False
         self.cv_bridge = CvBridge()
         self.state = None
@@ -62,7 +64,10 @@ class AgilePilotNode:
             return
         if self.state is None:
             return
-        command = compute_command_state_based(state=self.state, obstacles=obs_data)
+        rl_policy = None
+        if self.ppo_path is not None:
+            rl_policy = load_rl_policy(self.ppo_path)
+        command = compute_command_state_based(state=self.state, obstacles=obs_data, rl_policy=rl_policy)
         self.publish_command(command)
 
     def publish_command(self, command):
@@ -113,7 +118,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Agile Pilot.')
     parser.add_argument('--vision_based', help='Fly vision-based', required=False, dest='vision_based',
                         action='store_true')
+    parser.add_argument('--ppo_path', help='PPO neural network policy', required=False,  default=None)
 
     args = parser.parse_args()
-    agile_pilot_node = AgilePilotNode(vision_based=args.vision_based)
+    agile_pilot_node = AgilePilotNode(vision_based=args.vision_based, ppo_path=args.ppo_path)
     rospy.spin()

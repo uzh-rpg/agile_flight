@@ -17,8 +17,8 @@ from stable_baselines3.ppo.policies import MlpPolicy
 def normalize_obs(obs, obs_mean, obs_var):
     return (obs - obs_mean) / np.sqrt(obs_var + 1e-8)
 
-def rl_example(state, obstacles):
-    global policy, obs_mean, obs_var, act_mean, act_std
+def rl_example(state, obstacles, rl_policy=None):
+    policy, obs_mean, obs_var, act_mean, act_std = rl_policy
     # Convert obstacles to vector observation
     obs_vec = []
     for obstacle in obstacles.obstacles:
@@ -29,21 +29,12 @@ def rl_example(state, obstacles):
     obs_vec = np.array(obs_vec)
 
     # Convert state to vector observation
-    goal_pos = np.array([0.0, 0.0, 5.0]) 
-    delta_goal = state.pos - goal_pos
+    goal_vel = np.array([3.0, 0.0, 0.0]) 
+
     att_aray = np.array([state.att[1], state.att[2], state.att[3], state.att[0]])
-    # att_aray = np.array([ -0.8250897, -0.4162377, 0.3725094, -0.0849108 ])
     rotation_matrix = R.from_quat(att_aray).as_matrix().reshape((9,), order="F")
-
-    # constructe observation and perform normalization
     obs = np.concatenate([
-        delta_goal, rotation_matrix, state.vel, obs_vec], axis=0).astype(np.float64)
-
-
-    # obs = np.concatenate([
-    #     delta_goal, rotation_matrix, state.vel, state.omega], axis=0).astype(np.float64)
-    obs = np.concatenate([
-        delta_goal, rotation_matrix, state.vel], axis=0).astype(np.float64)
+        goal_vel, rotation_matrix, state.vel, obs_vec], axis=0).astype(np.float64)
 
     obs = obs.reshape(-1, obs.shape[0])
     norm_obs = normalize_obs(obs, obs_mean, obs_var)
@@ -56,16 +47,12 @@ def rl_example(state, obstacles):
     command.t = state.t
     command.collective_thrust = action[0] 
     command.bodyrates = action[1:4] 
-
-
     return command
 
-def load_rl_policy():
-    rsg_root = os.path.dirname(os.path.abspath(__file__))
-    ppo_dir = rsg_root + "/rl_policy/PPO_10"
-    policy_dir = ppo_dir + "/Policy/iter_00500.pth" 
-    rms_dir = ppo_dir + "/RMS/iter_00500.npz" 
-    cfg_dir =  ppo_dir + "/config.yaml"
+def load_rl_policy(policy_path):
+    policy_dir = policy_path  + "/Policy/iter_00500.pth" 
+    rms_dir = policy_path + "/RMS/iter_00500.npz" 
+    cfg_dir =  policy_path + "/config.yaml"
 
     # action 
     env_cfg = YAML().load(open(cfg_dir, "r"))
@@ -94,5 +81,3 @@ def load_rl_policy():
     policy.to(device)
 
     return policy, obs_mean, obs_var, act_mean, act_std
-
-policy, obs_mean, obs_var, act_mean, act_std = load_rl_policy()
