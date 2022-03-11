@@ -1,0 +1,52 @@
+environment:
+  level: hard   # three difficulty level [easy, median, hard]
+  world_box: [-20, 80, -10, 10, 0.0, 10] # xmin, xmax, ymin, ymax, zmin, zmax
+  goal_vel: [3.0, 0.0, 0.0] # goal velicty for tracking vx, vy, vz
+  max_detection_range: 10.0 # max obstacle detection range, in meters
+
+rewards:
+  vel_coeff: -0.01
+  collision_coeff: -0.01
+  angular_vel_coeff: -0.0001
+  survive_rew: 0.03
+  names: [lin_vel_reward, collision_penalty, ang_vel_penalty, survive_rew, total]
+
+rgb_camera:
+  on: yes
+  t_BC: [0.0, 0.0, 0.3] # translational vector of the camera with repect to the body frame
+  r_BC: [0.0, 0.0, -90] # rotational angle (roll, pitch, yaw) of the camera in degree.
+  channels: 3
+  width: 320
+  height: 240
+  fov: 70.0
+  enable_depth: yes
+  enable_segmentation: no
+  enable_opticalflow: no
+
+unity:
+  scene_id: 0 # 0 warehouse, 1 garage, 3 natureforest
+  render: no
+
+simulation:
+  seed: 1
+  sim_dt: 0.02
+  max_t: 10.0
+  num_envs: 100
+  num_threads: 10
+
+quadrotor_dynamics:
+  mass: 0.752
+  tbm_fr: [0.075, -0.10, 0.0] # [m]
+  tbm_bl: [-0.075, 0.10, 0.0] # [m]
+  tbm_br: [-0.075, -0.10, 0.0] # [m]
+  tbm_fl: [0.075, 0.10, 0.0] # [m
+  omega_max: [6.0, 6.0, 2.0]
+  inertia: [0.0025, 0.0021, 0.0043]
+  kappa: 0.022
+  motor_omega_min: 150.0
+  motor_omega_max: 2800.0
+  motor_tau: 0.033
+  thrust_map: [1.562522e-6, 0.0, 0.0] # max thrust = 8.50 N
+  body_drag_1: [0.00, 0.00, 0.00]
+  body_drag_3: [0.00, 0.00, 0.00]
+  body_drag_h: 0.00

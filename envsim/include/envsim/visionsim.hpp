@@ -65,8 +65,8 @@ class VisionSim {
   Quadrotor quad_;
   QuadrotorSimulator simulator_;
   RosPilot ros_pilot_;
-  Scalar sim_dt_ = 0.01;
   Scalar camera_dt_ = 0.04;  // 20 Hz. Should be a multiple of sim_dt_
+  Scalar sim_dt_ = 0.01;
   int render_every_n_steps_ = camera_dt_ / sim_dt_;
   int step_counter_ = 0;
   Scalar real_time_factor_ = 1.0;
