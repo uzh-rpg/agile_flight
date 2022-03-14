@@ -1,6 +1,3 @@
-[submodule "agilicious"]
-	path = agilicious
-	url = git@github.com:uzh-rpg/agilicious.git
 [submodule "flightmare"]
 	path = flightmare
 	url = git@github.com:uzh-rpg/flightmare.git
@@ -10,3 +7,7 @@
 [submodule "mav_comm"]
 	path = mav_comm
 	url = https://github.com/ethz-asl/mav_comm
+[submodule "dodgedrone_simulation"]
+	path = dodgedrone_simulation
+	url = git@github.com:uzh-rpg/dodgedrone_simulation.git
+	branch = main
