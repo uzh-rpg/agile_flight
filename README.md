@@ -105,3 +105,23 @@ We also provide an easy interface for training your navigation policy using rein
 Follow [this guide](/envtest/python/README.md) to know more about how to use the training code and some tips on how to develop reinforcement learning algorithms
 
 
+
+## Task  
+The task is to control a simulated quadrotor to fly through obstacle dense environments.
+The environment contains both static and dynamic obstacles. 
+You have to download the obstacle confiurations from [here]() and extract the file under [/flightmare/flightpy/configs/vision](/flightmare/flightpy/configs/vision/).
+Afterwards, you can change the [config.yaml](/flightmare/flightpy/configs/vision/config.yaml).
+
+
+```yaml
+environment:
+  level: "medium" # three difficulty level for obstacles [easy, medium, hard]
+  env_folder: "environment_0" # configurations for dynamic and static obstacles, [0 - 100]
+  world_box: [-20, 80, -10, 10, 0.0, 10] # xmin, xmax, ymin, ymax, zmin, zmax
+  goal_vel: [3.0, 0.0, 0.0] # goal velicty for tracking vx, vy, vz
+  max_detection_range: 10.0 # max obstacle detection range, in meters
+
+unity:
+  scene_id: 0 # 0 warehouse, 1 garage, 3 natureforest
+  render: no 
+```
