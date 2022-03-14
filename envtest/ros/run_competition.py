@@ -2,8 +2,8 @@
 import argparse
 
 import rospy
-from agiros_msgs.msg import Command
-from agiros_msgs.msg import QuadState
+from dodgeros_msgs.msg import Command
+from dodgeros_msgs.msg import QuadState
 from cv_bridge import CvBridge
 from geometry_msgs.msg import TwistStamped
 from sensor_msgs.msg import Image
@@ -34,17 +34,17 @@ class AgilePilotNode:
                                           queue_size=1, tcp_nodelay=True)
 
         # Observation subscribers
-        self.odom_sub = rospy.Subscriber("/" + quad_name + "/agiros_pilot/state", QuadState, self.state_callback,
+        self.odom_sub = rospy.Subscriber("/" + quad_name + "/dodgeros_pilot/state", QuadState, self.state_callback,
                                          queue_size=1, tcp_nodelay=True)
 
-        self.img_sub = rospy.Subscriber("/" + quad_name + "/agiros_pilot/unity/depth", Image, self.img_callback,
+        self.img_sub = rospy.Subscriber("/" + quad_name + "/dodgeros_pilot/unity/depth", Image, self.img_callback,
                                         queue_size=1, tcp_nodelay=True)
-        self.obstacle_sub = rospy.Subscriber("/" + quad_name + "/agiros_pilot/groundtruth/obstacles", ObstacleArray,
+        self.obstacle_sub = rospy.Subscriber("/" + quad_name + "/dodgeros_pilot/groundtruth/obstacles", ObstacleArray,
                                              self.obstacle_callback, queue_size=1, tcp_nodelay=True)
 
         # Command publishers
-        self.cmd_pub = rospy.Publisher("/" + quad_name + "/agiros_pilot/feedthrough_command", Command, queue_size=1)
-        self.linvel_pub = rospy.Publisher("/" + quad_name + "/agiros_pilot/velocity_command", TwistStamped,
+        self.cmd_pub = rospy.Publisher("/" + quad_name + "/dodgeros_pilot/feedthrough_command", Command, queue_size=1)
+        self.linvel_pub = rospy.Publisher("/" + quad_name + "/dodgeros_pilot/velocity_command", TwistStamped,
                                           queue_size=1)
 
     def img_callback(self, img_data):

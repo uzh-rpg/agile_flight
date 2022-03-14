@@ -14,14 +14,14 @@
 #include "std_msgs/String.h"
 
 // -- agilicious
-#include "agilib/base/parameter_base.hpp"
-#include "agilib/simulator/model_init.hpp"
-#include "agilib/simulator/model_motor.hpp"
-#include "agilib/simulator/model_rigid_body.hpp"
-#include "agilib/simulator/model_thrust_torque_simple.hpp"
-#include "agilib/simulator/quadrotor_simulator.hpp"
-#include "agilib/utils/timer.hpp"
-#include "agiros/ros_pilot.hpp"
+#include "dodgelib/base/parameter_base.hpp"
+#include "dodgelib/simulator/model_init.hpp"
+#include "dodgelib/simulator/model_motor.hpp"
+#include "dodgelib/simulator/model_rigid_body.hpp"
+#include "dodgelib/simulator/model_thrust_torque_simple.hpp"
+#include "dodgelib/simulator/quadrotor_simulator.hpp"
+#include "dodgelib/utils/timer.hpp"
+#include "dodgeros/ros_pilot.hpp"
 
 // flightlib
 #include "flightlib/envs/vision_env/vision_env.hpp"

@@ -5,7 +5,7 @@ import yaml
 import rospy
 import numpy as np
 
-from agiros_msgs.msg import Command, QuadState
+from dodgeros_msgs.msg import Command, QuadState
 from envsim_msgs.msg import ObstacleArray
 from std_msgs.msg import Empty
 

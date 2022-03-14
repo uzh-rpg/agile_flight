@@ -61,7 +61,7 @@ The usage of this code base entails two main aspects: writing your algorithm and
 
 To facilitate coding of your algorithms, we provided a simple code structure for you, just edit the following file: [envtest/ros/user_code.py](https://github.com/uzh-rpg/agile_flight/blob/main/envtest/ros/user_code.py).
 This file contains two functions, [compute_command_vision_based](https://github.com/uzh-rpg/agile_flight/blob/main/envtest/ros/user_code.py#L8) and [compute_command_state_based](https://github.com/uzh-rpg/agile_flight/blob/main/envtest/ros/user_code.py#L44).
-In he vision-based case, you will get the current image and state of the quadrotor. In the state-based case, you will get the metric distance to obstacles and the state of the quadrotor. We strongly reccomend using the state-based version to start with, it is going to be much easier than working with pixels!
+In the vision-based case, you will get the current image and state of the quadrotor. In the state-based case, you will get the metric distance to obstacles and the state of the quadrotor. We strongly reccomend using the state-based version to start with, it is going to be much easier than working with pixels!
 
 Depending on the part of the competition you are interested in, adapt the corresponding function.
 To immediately see something moving, both functions at the moment publish a command to fly straight forward, of course without avoiding any obstacles.
@@ -81,6 +81,10 @@ To use the competition software, three steps are required:
    python evaluation_node.py
    ```
 
+<<<<<<< HEAD
+=======
+   The evaluation node comes with a config file. There, the options to plot the results can be disabled if you want no plots.
+>>>>>>> 03836f7df8f34acdc82bcc3f5d5ebb9a7d1d93a1
 2. Start your user code. This code will generate control commands based on the sensory observations. You can toggle vision-based operation by providing the argument `--vision_based`.
 
    ```
@@ -94,9 +98,7 @@ To use the competition software, three steps are required:
    rostopic pub /kingfisher/start_navigation std_msgs/Empty "{}" -1
    ```
 
-TODO: we probably should prepare some bash scripts to automate parts of this...
-TODO: we also need some automatic evaluation script, i.e. something that measures time and number of collisions or so
-TODO: we need to provide a conda install file or a requirements.txt to install python dependencies.
+If you want to perform steps 1-3 automatically, you can use the `launch_evaluation.bash N` script provided in this folder. It will automatically perform `N` rollouts and then create an `evaluation.yaml` file which summarizes the rollout statistics.
 
 ### Installation (for Python User)
 

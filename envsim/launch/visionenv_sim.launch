@@ -10,8 +10,8 @@
     <arg name="rviz" default="True"/>
 
     <group ns="$(arg quad_name)">
-        <node name="agiros_pilot" pkg="envsim" type="visionsim_node" output="screen">
-            <param name="agi_param_dir" value="$(find agilib)/params"/>
+        <node name="dodgeros_pilot" pkg="envsim" type="visionsim_node" output="screen">
+            <param name="agi_param_dir" value="$(find dodgelib)/params"/>
             <param name="ros_param_dir" value="$(find envsim)/parameters"/>
             <param name="use_bem_propeller_model" value="$(arg use_bem_propeller_model)"/>
             <param name="pilot_config" value="simple_sim_pilot.yaml"/>
@@ -27,8 +27,8 @@
           ns="$(arg quad_name)" if="$(arg rviz)"/>
 
     <!-- GUI -->
-    <node name="agiros_gui" pkg="rqt_gui" type="rqt_gui"
-          args="-s agiros_gui.basic_flight.BasicFlight --args --quad_name $(arg quad_name)" output="screen"
+    <node name="dodgeros_gui" pkg="rqt_gui" type="rqt_gui"
+          args="-s dodgeros_gui.basic_flight.BasicFlight --args --quad_name $(arg quad_name)" output="screen"
           if="$(arg gui)"/>
 
     <!-- Flightmare Standalone -->
