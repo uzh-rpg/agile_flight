@@ -7,8 +7,8 @@ pipeline:
     type:               "Time"
 
   controller:
-    type:               "MPC"
-    file:               "mpc.yaml"
+    type:               "GEO"
+    file:               "geo.yaml"
 
   bridge:
     type:               "ROS"

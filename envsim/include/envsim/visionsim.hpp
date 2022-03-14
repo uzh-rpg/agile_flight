@@ -15,10 +15,8 @@
 
 // -- agilicious
 #include "agilib/base/parameter_base.hpp"
-#include "agilib/simulator/model_body_drag.hpp"
 #include "agilib/simulator/model_init.hpp"
 #include "agilib/simulator/model_motor.hpp"
-#include "agilib/simulator/model_propeller_bem.hpp"
 #include "agilib/simulator/model_rigid_body.hpp"
 #include "agilib/simulator/model_thrust_torque_simple.hpp"
 #include "agilib/simulator/quadrotor_simulator.hpp"
@@ -39,7 +37,6 @@ class VisionSim {
 
  private:
   void resetCallback(const std_msgs::EmptyConstPtr& msg);
-  void loadQuadrotorCallback(const std_msgs::StringConstPtr& msg);
 
   void simLoop();
   void publishState(const QuadState& state);
@@ -48,12 +45,8 @@ class VisionSim {
 
   ros::NodeHandle nh_, pnh_;
   ros::Subscriber reset_sub_;
-  ros::Subscriber reload_quad_sub_;
-  ros::Subscriber reload_mockvio_sub_;
   ros::Publisher odometry_pub_;
   ros::Publisher state_pub_;
-  ros::Publisher delayed_state_pub_;
-  ros::Publisher mockvio_state_pub_;
   ros::Publisher clock_pub_;
 
   ros::Publisher obstacle_pub_;

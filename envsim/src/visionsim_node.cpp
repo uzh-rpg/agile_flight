@@ -12,8 +12,6 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   : nh_(nh), pnh_(pnh), frame_id_(0) {
   // Logic subscribers
   reset_sub_ = pnh_.subscribe("reset_sim", 1, &VisionSim::resetCallback, this);
-  reload_quad_sub_ = pnh_.subscribe("reload_quadrotor", 1,
-                                    &VisionSim::loadQuadrotorCallback, this);
 
   // Publishers
   clock_pub_ = nh_.advertise<rosgraph_msgs::Clock>("/clock", 1);
@@ -31,52 +29,20 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
 
   ros_pilot_.getQuadrotor(&quad_);
   simulator_.updateQuad(quad_);
-  std::cout << quad_ << std::endl;
   simulator_.addModel(ModelInit{quad_});
   simulator_.addModel(ModelMotor{quad_});
 
-  bool use_bem = false;
   std::string low_level_ctrl;
   pnh_.getParam("render", render_);
   pnh_.getParam("agi_param_dir", agi_param_directory_);
   pnh_.getParam("ros_param_dir", ros_param_directory_);
-  pnh_.getParam("use_bem_propeller_model", use_bem);
   pnh_.getParam("real_time_factor", real_time_factor_);
-  pnh_.getParam("low_level_controller", low_level_ctrl);
   const bool got_directory =
     pnh_.getParam("agi_param_dir", agi_param_directory_);
 
-  if (use_bem) {
-    std::shared_ptr<ModelPropellerBEM> bem_model =
-      simulator_.addModel(ModelPropellerBEM{quad_});
-    std::shared_ptr<ModelBodyDrag> drag_model =
-      simulator_.addModel(ModelBodyDrag{quad_});
-    std::string bem_quad;
-    const bool got_bem_quad = pnh_.getParam("bem_quad", bem_quad);
-    if (got_directory && got_bem_quad) {
-      fs::path bem_param_file = agi_param_directory_ + "/quads/" + bem_quad;
-      Yaml node{bem_param_file};
-      bem_model->setParameters(node);
-      drag_model->setParameters(node);
-    } else {
-      ROS_WARN("Could not load BEM parameters!");
-    }
-  } else {
-    std::cout << "Not using BEM to model thrust" << std::endl;
-    simulator_.addModel(ModelThrustTorqueSimple{quad_});
-  }
+  simulator_.addModel(ModelThrustTorqueSimple{quad_});
   simulator_.addModel(ModelRigidBody{quad_});
 
-
-  if (!simulator_.setLowLevelController(low_level_ctrl)) {
-    ROS_WARN("Could not set low level controller!");
-  }
-  std::shared_ptr<LowLevelControllerBase> low_level_ctrl_ptr =
-    simulator_.getLowLevelController();
-  ROS_INFO("Setting LLC param dir to %s", agi_param_directory_.c_str());
-  low_level_ctrl_ptr->setParamDir(agi_param_directory_);
-
-  //
   std::string env_cfg_file =
     getenv("FLIGHTMARE_PATH") +
     std::string("/flightpy/configs/vision/config.yaml");
@@ -117,29 +83,6 @@ void VisionSim::resetCallback(const std_msgs::EmptyConstPtr &msg) {
 
   reset_state.t += t_start_.toSec();
 }
-
-void VisionSim::loadQuadrotorCallback(const std_msgs::StringConstPtr &msg) {
-  // this changes the simulated quadrotor, the controllers or the pilot are not
-  // aware of the change
-  ROS_INFO("Reloading quadrotor from [%s]", msg->data.c_str());
-
-  Quadrotor quad;
-  if (!quad.load(msg->data)) {
-    ROS_FATAL("Could not load quadrotor.");
-    ros::shutdown();
-    return;
-  }
-
-  {
-    const std::lock_guard<std::mutex> lock(sim_mutex_);
-    if (!simulator_.updateQuad(quad)) {
-      ROS_FATAL("Failed to update quadrotor.");
-      ros::shutdown();
-      return;
-    }
-  }
-}
-
 
 void VisionSim::simLoop() {
   while (ros::ok()) {
