@@ -28,8 +28,10 @@ unzip -o $project_path/flightmare/flightrender/RPG_Flightmare.zip -d $project_pa
 
 echo "export FLIGHTMARE_PATH=$project_path/flightmare" >> ~/.bashrc
 
-# 
 echo "Createing an conda environment from the environment.yaml file"
+
+# 
+echo "Createing an conda environment from the environment.yaml file. Make sure you have anaconda installed"
 conda env create -f environment.yaml
 
 # 

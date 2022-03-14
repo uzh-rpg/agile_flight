@@ -1,4 +1,0 @@
-catkin_pkg
-empy
-pyyaml
-rospkg

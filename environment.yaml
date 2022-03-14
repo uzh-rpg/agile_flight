@@ -1,4 +1,4 @@
-name: agileflight
+name: agileflight0
 channels:
   - conda-forge
   - pytorch
@@ -110,7 +110,7 @@ dependencies:
   - zlib=1.2.11=h7b6447c_3
   - zstd=1.4.9=haebb681_0
   - pip:
-    - stable-baselines3==1.4.0
+    - stable-baselines3
     - absl-py==1.0.0
     - astroid==2.9.0
     - astunparse==1.6.3
@@ -118,7 +118,6 @@ dependencies:
     - casadi==3.5.5
     - catkin-pkg==0.4.24
     - charset-normalizer==2.0.7
-    - cloudpickle==2.0.0
     - cycler==0.11.0
     - data==0.4
     - decorator==5.1.0
@@ -150,7 +149,6 @@ dependencies:
     - opt-einsum==3.3.0
     - packaging==21.2
     - pandas==1.3.4
-    - pillow==8.4.0
     - platformdirs==2.4.1
     - protobuf==3.19.1
     - pyasn1-modules==0.2.8
