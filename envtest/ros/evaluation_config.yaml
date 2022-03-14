@@ -1,7 +1,7 @@
 topics:
   quad_name: "kingfisher"
-  state: "agiros_pilot/state"
-  obstacles: "agiros_pilot/groundtruth/obstacles"
+  state: "dodgeros_pilot/state"
+  obstacles: "dodgeros_pilot/groundtruth/obstacles"
   start: "start_navigation"
   finish: "finish_navigation"
 

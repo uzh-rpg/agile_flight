@@ -1,6 +1,6 @@
 #include <ros/ros.h>
 
-#include "agiros_msgs/QuadState.h"
+#include "dodgeros_msgs/QuadState.h"
 #include "envsim/visionsim.hpp"
 #include "envsim_msgs/ObstacleArray.h"
 #include "nav_msgs/Odometry.h"
@@ -16,7 +16,7 @@ VisionSim::VisionSim(const ros::NodeHandle &nh, const ros::NodeHandle &pnh)
   // Publishers
   clock_pub_ = nh_.advertise<rosgraph_msgs::Clock>("/clock", 1);
   odometry_pub_ = pnh_.advertise<nav_msgs::Odometry>("groundtruth/odometry", 1);
-  state_pub_ = pnh_.advertise<agiros_msgs::QuadState>("groundtruth/state", 1);
+  state_pub_ = pnh_.advertise<dodgeros_msgs::QuadState>("groundtruth/state", 1);
 
   image_transport::ImageTransport it(pnh_);
 
@@ -154,7 +154,7 @@ void VisionSim::simLoop() {
 }
 
 void VisionSim::publishState(const QuadState &state) {
-  agiros_msgs::QuadState msg_state;
+  dodgeros_msgs::QuadState msg_state;
   msg_state.header.frame_id = "world";
   msg_state.header.stamp = ros::Time(state.t);
   msg_state.t = state.t;
