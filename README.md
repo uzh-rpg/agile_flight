@@ -75,6 +75,8 @@ To use the competition software, three steps are required:
    # Using the GUI, press Arm & Start to take off.
    python evaluation_node.py
    ```
+
+   The evaluation node comes with a config file. There, the options to plot the results can be disabled if you want no plots.
 2. Start your user code. This code will generate control commands based on the sensory observations. You can toggle vision-based operation by providing the argument `--vision_based`.
    ```
    cd envtest/ros
@@ -85,8 +87,8 @@ To use the competition software, three steps are required:
    rostopic pub /kingfisher/start_navigation std_msgs/Empty "{}" -1
    ```
 
-TODO: we probably should prepare some bash scripts to automate parts of this...
-TODO: we also need some automatic evaluation script, i.e. something that measures time and number of collisions or so
+If you want to perform steps 1-3 automatically, you can use the `launch_evaluation.bash N` script provided in this folder. It will automatically perform `N` rollouts and then create an `evaluation.yaml` file which summarizes the rollout statistics.
+
 TODO: we need to provide a conda install file or a requirements.txt to install python dependencies.
 
 ### Installation (for Python User)
