@@ -24,10 +24,34 @@ We provide a simple reinforcement learning code for you. Run the training via th
 cd agile_flight/envtest
 python3 -m python.run_vision_ppo --render 0 --train 1
 ```
+## Policy Evaluation  
+
+After training, you can test the trained policy by the following command.
+```
+python3 -m python.run_vision_ppo --render 0 --train 0 --trial trial_num --iter iter_num 
+```
+Depends on which checkpoint you want to load, change the **trail_num** and the **iter_num**.
+All the neural network checkpoints are stored under /envtest/python/saved.
+For example, 
+```
+python3 -m python.run_vision_ppo --render 0 --train 0 --trial 1 --iter 500 
+```
+for the policy that was trained for 500 iterations in PPO_1.
+
+ 
+## An overview of Reinforcement Learning for Obstacle Avoidance 
+
+![vision_demo](/docs/imgs/env_ppo.png | width=100x)
 
 ### About the RL environment
+The RL environment is specified in 
 
-### About the Python Binding 
+```
+flightmare/flightlib/include/flightlib/env/vision_env
+```
+
+which defines a training environment for reinforcement learning.
+It simulates the quadrotor dynamics and the obstacles.  
 
 ### About the RL Algorithm 
 
