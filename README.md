@@ -23,7 +23,7 @@ Before continuing, make sure to have g++ and gcc to version 9.3.0. You can check
 
 In addition, make sure to have ROS installed. Follow [this guide](http://wiki.ros.org/noetic/Installation/Ubuntu) and install ROS Noetic if you don't already have it.
 
-### Installation
+### Installation (for ROS User)
 We only support Ubuntu 20.04 with ROS noetic. Other setups are likely to work as well but not actively supported.
 
 Start by creating a new catkin workspace. 
@@ -89,23 +89,19 @@ TODO: we probably should prepare some bash scripts to automate parts of this...
 TODO: we also need some automatic evaluation script, i.e. something that measures time and number of collisions or so
 TODO: we need to provide a conda install file or a requirements.txt to install python dependencies.
 
-## Training (Optional)
-We also provide an easy interface for training your navigation policy using RL. While this is not required to compete, it could just make your job easier if you plan on using RL.
+### Installation (for Python User)
+If you want to develop algorithms using only Python, especially reinforcement learning, you need to install our library as python package. 
 
-### Installation
 Run the `setup_py.bash` in the main folder of this repository, it will ask for sudo permissions.
 
 ```bash
 ./setup_py.bash
 ```
 
-### Usage
+**Using Reinforcement Learning (Optional)**
+We also provide an easy interface for training your navigation policy using reinforcement learning. While this is not required to compete, it could just make your job easier if you plan on using RL.
 
-Follow [this guide](/envtest/python/README.md) to know more about how to use the training code.
 
+Follow [this guide](/envtest/python/README.md) to know more about how to use the training code and some tips on how to develop reinforcement learning algorithms
 
-## TODOs
-
-[] Double check the command code, which has caused some issues
-[] ROS launch file for RL policy
 
