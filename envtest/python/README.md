@@ -41,7 +41,7 @@ for the policy that was trained for 500 iterations in PPO_1.
  
 ## An overview of Reinforcement Learning for Obstacle Avoidance 
 
-![vision_demo](/docs/imgs/env_ppo.png | width=100x)
+![vision_demo](/docs/imgs/env_ppo.png)
 
 ### About the RL environment
 The RL environment is specified in 
@@ -53,8 +53,12 @@ flightmare/flightlib/include/flightlib/env/vision_env
 which defines a training environment for reinforcement learning.
 It simulates the quadrotor dynamics and the obstacles.  
 
-### About the RL Algorithm 
+Our code provide only a basic implementation for the task. The performance of current RL policy is sub-optimal.
+It is highly recommanded that you make significant changes to the environment in order to train a policy effectively for obstacle avoidance.
+For example, design a better reward function and initialization strategy.
 
+### About the RL Algorithm 
+We use [stable-baselines3](https://github.com/DLR-RM/stable-baselines3) for the reinforcement learning. Specifically, our code provide interface to the PPO algorithm, since it allows parallelizing several hundreds of environment for training. 
 ## Policy Evaluation in ROS
 
 Follow the steps on [this guide](https://github.com/uzh-rpg/agile_flight/blob/main/README.md#testing-todo) to evaluate your policies with our flight stack API.

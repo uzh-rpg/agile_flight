@@ -101,6 +101,8 @@ If you want to perform steps 1-3 automatically, you can use the `launch_evaluati
 
 If you want to develop algorithms using only Python, especially reinforcement learning, you need to install our library as python package.
 
+**Make sure that you have [anaconda](https://www.anaconda.com/) installed. This is highly recommanded.**
+
 Run the `setup_py.bash` in the main folder of this repository, it will ask for sudo permissions.
 
 ```bash
