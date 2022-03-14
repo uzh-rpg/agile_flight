@@ -58,7 +58,7 @@ The usage of this code base entails two main aspects: writing your algorithm and
 
 To facilitate coding of your algorithms, we provided a simple code structure for you, just edit the following file: [envtest/ros/user_code.py](https://github.com/uzh-rpg/agile_flight/blob/main/envtest/ros/user_code.py). 
 This file contains two functions, [compute_command_vision_based](https://github.com/uzh-rpg/agile_flight/blob/main/envtest/ros/user_code.py#L8) and [compute_command_state_based](https://github.com/uzh-rpg/agile_flight/blob/main/envtest/ros/user_code.py#L44).
-In he vision-based case, you will get the current image and state of the quadrotor. In the state-based case, you will get the metric distance to obstacles and the state of the quadrotor. We strongly reccomend using the state-based version to start with, it is going to be much easier than working with pixels!
+In the vision-based case, you will get the current image and state of the quadrotor. In the state-based case, you will get the metric distance to obstacles and the state of the quadrotor. We strongly reccomend using the state-based version to start with, it is going to be much easier than working with pixels!
 
 Depending on the part of the competition you are interested in, adapt the corresponding function.
 To immediately see something moving, both functions at the moment publish a command to fly straight forward, of course without avoiding any obstacles.
@@ -88,8 +88,6 @@ To use the competition software, three steps are required:
    ```
 
 If you want to perform steps 1-3 automatically, you can use the `launch_evaluation.bash N` script provided in this folder. It will automatically perform `N` rollouts and then create an `evaluation.yaml` file which summarizes the rollout statistics.
-
-TODO: we need to provide a conda install file or a requirements.txt to install python dependencies.
 
 ### Installation (for Python User)
 If you want to develop algorithms using only Python, especially reinforcement learning, you need to install our library as python package. 
