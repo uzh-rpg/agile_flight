@@ -6,6 +6,9 @@ then
   exit
 fi
 
+project_path=$PWD
+echo $project_path
+
 echo "Making sure submodules are initialized and up-to-date"
 git submodule update --init --recursive
 
@@ -18,9 +21,12 @@ echo "Ignoring unused Flightmare folders!"
 touch flightmare/flightros/CATKIN_IGNORE
 
 echo "Downloading Flightmare Unity standalone..."
-wget "https://download.ifi.uzh.ch/rpg/Flightmare/RPG_Flightmare.zip" | tar Jxf - -C flightmare/flightrender/ --strip 1
+wget "https://download.ifi.uzh.ch/rpg/Flightmare/RPG_Flightmare.zip" --directory-prefix=$project_path/flightmare/flightrender 
 
-echo "export FLIGHTMARE_PATH=$PWD/flightmare" >> ~/.bashrc
+echo "Unziping Flightmare Unity Standalone"
+unzip -o $project_path/flightmare/flightrender/RPG_Flightmare.zip -d $project_path/flightmare/flightrender 
+
+echo "export FLIGHTMARE_PATH=$project_path/flightmare" >> ~/.bashrc
 
 # 
 echo "Createing an conda environment from the environment.yaml file"
@@ -35,14 +41,19 @@ echo "Actiavte the environment"
 conda activate agileflight
 
 echo "Compiling the agile flight environment and install the environment as python package"
-cd $PWD/flightmare/flightlib/build
+cd $project_path/flightmare/flightlib/build
 cmake ..
 make -j10
 pip install .
 
+
+echo "Install RPG baseline"
+cd $project_path/flightmare/flightpy/flightrl
+pip install .
+
 echo "Run the first vision demo."
-cd ../../../envtest 
-python3 -m envpy.run_vision_demo --render 1
+cd $project_path/envtest 
+python3 -m python.run_vision_demo --render 1
 
 echo "Done!"
 echo "Have a save flight!"

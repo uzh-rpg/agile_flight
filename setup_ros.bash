@@ -6,31 +6,32 @@ then
   exit
 fi
 
+project_path=$PWD
+echo $project_path
+
 echo "Making sure submodules are initialized and up-to-date"
 git submodule update --init --recursive
-
 
 echo "Using apt to install dependencies..."
 echo "Will ask for sudo permissions:"
 sudo apt update
 sudo apt install -y --no-install-recommends build-essential cmake libzmqpp-dev libopencv-dev unzip python3-catkin-tools
-sudo pip install gdown
 sudo pip install uniplot
 
 echo "Ignoring unused Flightmare folders!"
 touch flightmare/flightros/CATKIN_IGNORE
 
 echo "Downloading Flightmare Unity standalone..."
-gdown --id 1ROT6EVmsdDHXM6hnMxM8cHQLStDlak_E
-unzip FlightmareSimple.zip -d flightmare/flightrender
-rm FlightmareSimple.zip
+wget "https://download.ifi.uzh.ch/rpg/Flightmare/RPG_Flightmare.zip" --directory-prefix=$project_path/flightmare/flightrender 
 
+echo "Unziping Flightmare Unity Standalone"
+unzip -o $project_path/flightmare/flightrender/RPG_Flightmare.zip -d $project_path/flightmare/flightrender 
 
-echo "Downloading Flightmare Unity standalone..."
-wget "https://download.ifi.uzh.ch/rpg/Flightmare/RPG_Flightmare.zip" | tar Jxf - -C flightmare/flightrender/ --strip 1
+echo "Removing Flightmare Unity Standalone zip file"
+rm $project_path/flightmare/flightrender/RPG_Flightmare.zip
 
 echo "Setting the flightmare environment variable. Please add 'export FLIGHTMARE_PATH=$PWD/flightmare' to your .bashrc!"
-export FLIGHTMARE_PATH=$PWD/flightmare
+export FLIGHTMARE_PATH=$project_path/flightmare
 
 echo "Done!"
 echo "Have a save flight!"
