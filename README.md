@@ -81,10 +81,7 @@ To use the competition software, three steps are required:
    python evaluation_node.py
    ```
 
-<<<<<<< HEAD
-=======
    The evaluation node comes with a config file. There, the options to plot the results can be disabled if you want no plots.
->>>>>>> 03836f7df8f34acdc82bcc3f5d5ebb9a7d1d93a1
 2. Start your user code. This code will generate control commands based on the sensory observations. You can toggle vision-based operation by providing the argument `--vision_based`.
 
    ```

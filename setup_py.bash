@@ -18,7 +18,7 @@ echo "Ignoring unused Flightmare folders!"
 touch flightmare/flightros/CATKIN_IGNORE
 
 echo "Downloading Flightmare Unity standalone..."
-curl --show-error --progress-bar --location "https://drive.google.com/file/d/1UxWiN7r0M6HAtxOFfiunrx-5FH6EaMcS/view?usp=sharing" | tar Jxf - -C flightmare/flightrender/ --strip 1
+wget "https://download.ifi.uzh.ch/rpg/Flightmare/RPG_Flightmare.zip" | tar Jxf - -C flightmare/flightrender/ --strip 1
 
 echo "export FLIGHTMARE_PATH=$PWD/flightmare" >> ~/.bashrc
 

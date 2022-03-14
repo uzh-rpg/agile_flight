@@ -26,7 +26,8 @@ unzip FlightmareSimple.zip -d flightmare/flightrender
 rm FlightmareSimple.zip
 
 
-curl --show-error --progress-bar --location "https://drive.google.com/file/d/1UxWiN7r0M6HAtxOFfiunrx-5FH6EaMcS/view?usp=sharing" | tar Jxf - -C flightmare/flightrender/ --strip 1
+echo "Downloading Flightmare Unity standalone..."
+wget "https://download.ifi.uzh.ch/rpg/Flightmare/RPG_Flightmare.zip" | tar Jxf - -C flightmare/flightrender/ --strip 1
 
 echo "Setting the flightmare environment variable. Please add 'export FLIGHTMARE_PATH=$PWD/flightmare' to your .bashrc!"
 export FLIGHTMARE_PATH=$PWD/flightmare
