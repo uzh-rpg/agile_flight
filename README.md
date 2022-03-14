@@ -89,8 +89,6 @@ To use the competition software, three steps are required:
 
 If you want to perform steps 1-3 automatically, you can use the `launch_evaluation.bash N` script provided in this folder. It will automatically perform `N` rollouts and then create an `evaluation.yaml` file which summarizes the rollout statistics.
 
-TODO: we need to provide a conda install file or a requirements.txt to install python dependencies.
-
 ### Installation (for Python User)
 If you want to develop algorithms using only Python, especially reinforcement learning, you need to install our library as python package. 
 
