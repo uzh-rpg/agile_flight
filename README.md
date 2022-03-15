@@ -53,6 +53,18 @@ Run the `setup_ros.bash` in the main folder of this repository, it will ask for 
 catkin build
 ```
 
+### Installation (for Python User)
+
+If you want to develop algorithms using only Python, especially reinforcement learning, you need to install our library as python package.
+
+**Make sure that you have [anaconda](https://www.anaconda.com/) installed. This is highly recommanded.**
+
+Run the `setup_py.bash` in the main folder of this repository, it will ask for sudo permissions.
+
+```bash
+./setup_py.bash
+```
+
 ### Task  
 
 The task is to control a simulated quadrotor to fly through obstacle dense environments.
@@ -113,19 +125,7 @@ To use the competition software, three steps are required:
 
 If you want to perform steps 1-3 automatically, you can use the `launch_evaluation.bash N` script provided in this folder. It will automatically perform `N` rollouts and then create an `evaluation.yaml` file which summarizes the rollout statistics.
 
-### Installation (for Python User)
-
-If you want to develop algorithms using only Python, especially reinforcement learning, you need to install our library as python package.
-
-**Make sure that you have [anaconda](https://www.anaconda.com/) installed. This is highly recommanded.**
-
-Run the `setup_py.bash` in the main folder of this repository, it will ask for sudo permissions.
-
-```bash
-./setup_py.bash
-```
-
 **Using Reinforcement Learning (Optional)**
-We also provide an easy interface for training your navigation policy using reinforcement learning. While this is not required to compete, it could just make your job easier if you plan on using RL.
+We provide an easy interface for training your navigation policy using reinforcement learning. While this is not required for the competition, it could just make your job easier if you plan on using RL.
 
 Follow [this guide](/envtest/python/README.md) to know more about how to use the training code and some tips on how to develop reinforcement learning algorithms
