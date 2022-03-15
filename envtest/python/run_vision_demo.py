@@ -7,7 +7,7 @@ import random
 import cv2
 import numpy as np
 from flightgym import VisionEnv_v1
-from flightrl.rpg_baselines.torch.envs import vec_env_wrapper as wrapper
+from rpg_baselines.torch.envs import vec_env_wrapper as wrapper
 from ruamel.yaml import YAML, RoundTripDumper, dump
 
 

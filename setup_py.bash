@@ -40,6 +40,7 @@ rm $project_path/flightmare/flightrender/RPG_Flightmare.zip
 
 # 
 echo "export FLIGHTMARE_PATH=$project_path/flightmare" >> ~/.bashrc
+source ~/.bashrc
 
 # 
 echo "Createing an conda environment from the environment.yaml file. Make sure you have anaconda installed"

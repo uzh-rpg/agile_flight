@@ -11,9 +11,9 @@ from ruamel.yaml import YAML, RoundTripDumper, dump
 from stable_baselines3.common.utils import get_device
 from stable_baselines3.ppo.policies import MlpPolicy
 
-from flightrl.rpg_baselines.torch.common.ppo import PPO
-from flightrl.rpg_baselines.torch.envs import vec_env_wrapper as wrapper
-from flightrl.rpg_baselines.torch.common.util import test_policy
+from rpg_baselines.torch.common.ppo import PPO
+from rpg_baselines.torch.envs import vec_env_wrapper as wrapper
+from rpg_baselines.torch.common.util import test_policy
 
 
 def configure_random_seed(seed, env=None):
