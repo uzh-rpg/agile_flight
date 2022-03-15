@@ -66,7 +66,7 @@ environment:
   env_folder: "environment_0" # configurations for dynamic and static obstacles, environment number are between [0 - 100]
 
 unity:
-  scene_id: 0 # 0 warehouse, 1 garage, 3 natureforest
+  scene_id: 0 # 0 warehouse, 1 garage, 2 natureforest, 3 wasteland
 ```
 
 ### Usage
