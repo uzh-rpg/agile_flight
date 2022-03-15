@@ -20,6 +20,9 @@ sudo apt install -y --no-install-recommends build-essential cmake libzmqpp-dev l
 echo "Ignoring unused Flightmare folders!"
 touch flightmare/flightros/CATKIN_IGNORE
 
+echo "Downloading Trajectories..."
+wget "https://download.ifi.uzh.ch/rpg/Flightmare/trajectories.zip" --directory-prefix=$project_path/flightmare/flightpy 
+
 echo "Downloading Flightmare Unity standalone..."
 wget "https://download.ifi.uzh.ch/rpg/Flightmare/RPG_Flightmare.zip" --directory-prefix=$project_path/flightmare/flightrender 
 
