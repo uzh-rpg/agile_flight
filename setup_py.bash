@@ -21,7 +21,7 @@ echo "Ignoring unused Flightmare folders!"
 touch flightmare/flightros/CATKIN_IGNORE
 
 # echo "Downloading Trajectories..."
-# wget "https://download.ifi.uzh.ch/rpg/Flightmare/trajectories.zip" --directory-prefix=$project_path/flightmare/flightpy/configs/vision 
+wget "https://download.ifi.uzh.ch/rpg/Flightmare/trajectories.zip" --directory-prefix=$project_path/flightmare/flightpy/configs/vision 
 
 echo "Unziping Trajectories... (this might take a while)"
 unzip -o $project_path/flightmare/flightpy/configs/vision/trajectories.zip -d $project_path/flightmare/flightpy/configs/vision/ | awk 'BEGIN {ORS=" "} {if(NR%50==0)print "."}'
