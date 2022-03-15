@@ -9,10 +9,9 @@ python3 -m python.run_vision_demo --render 1
 
 You should have TWO opencv windows open: one RGB image and one depth image. 
 
-(Antonio) Why is this relevant?
-
-
-Each [vision_env](/flightmare/flightlib/include/flightlib/envs/vision_env/vision_env.hpp) simulate one quadrotor, which has a monocular camera attached. We use vectorized environment [vision_vec_env](/flightmare/flightlib/include/flightlib/envs/vision_env/vision_env.hpp) for parallel simulation. As a result, you will have multiple simulated cameras. 
+Each **vision_env** ( in /flightmare/flightlib/include/flightlib/envs/vision_env/vision_env.hpp) simulate one quadrotor, which has a monocular camera attached. 
+We use vectorized environment **vision_vec_env** ( in /flightmare/flightlib/include/flightlib/envs/vision_env/vision_env.hpp) for parallel simulation. 
+As a result, you can simulate multiple drones. 
 
 ![vision_demo](/docs/imgs/vision_demo.png)
 
@@ -56,9 +55,12 @@ It simulates the quadrotor dynamics and the obstacles.
 Our code provide only a basic implementation for the task. The performance of current RL policy is sub-optimal.
 It is highly recommanded that you make significant changes to the environment in order to train a policy effectively for obstacle avoidance.
 For example, design a better reward function and initialization strategy.
+You can take inspirations from our previous publication about how to [use PPO to solve challenge drone racing task](https://arxiv.org/abs/2103.08624)
 
 ### About the RL Algorithm 
-We use [stable-baselines3](https://github.com/DLR-RM/stable-baselines3) for the reinforcement learning. Specifically, our code provide interface to the PPO algorithm, since it allows parallelizing several hundreds of environment for training. 
+We use [stable-baselines3](https://github.com/DLR-RM/stable-baselines3) for the reinforcement learning. 
+Specifically, our code provide interface to the PPO algorithm, since it allows parallelizing several hundreds of environment for training. 
+
 ## Policy Evaluation in ROS
 
 Follow the steps on [this guide](https://github.com/uzh-rpg/agile_flight/blob/main/README.md#testing-todo) to evaluate your policies with our flight stack API.
