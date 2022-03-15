@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="quad_name" default="blackbird"/>
+    <arg name="quad_name" default="kingfisher"/>
     <arg name="use_bem_propeller_model" default="False"/>
     <arg name="low_level_controller" default="Simple"/>
     <arg name="render" default="False"/>

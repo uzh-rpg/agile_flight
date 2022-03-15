@@ -26,8 +26,7 @@ class AgilePilotNode:
         self.cv_bridge = CvBridge()
         self.state = None
 
-        # quad_name = 'kingfisher'
-        quad_name = 'blackbird'
+        quad_name = 'kingfisher'
 
         # Logic subscribers
         self.start_sub = rospy.Subscriber("/" + quad_name + "/start_navigation", Empty, self.start_callback,
@@ -46,6 +45,7 @@ class AgilePilotNode:
         self.cmd_pub = rospy.Publisher("/" + quad_name + "/dodgeros_pilot/feedthrough_command", Command, queue_size=1)
         self.linvel_pub = rospy.Publisher("/" + quad_name + "/dodgeros_pilot/velocity_command", TwistStamped,
                                           queue_size=1)
+        print("Initialization completed!")
 
     def img_callback(self, img_data):
         if not self.vision_based:
