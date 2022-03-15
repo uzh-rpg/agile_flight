@@ -1,6 +1,6 @@
 # DodgeDrone: Vision-based Agile Drone Flight (ICRA 2022 Competition)
 
-[![IMAGE ALT TEXT HERE](docs/video.jpg)](https://www.youtube.com/watch?v=ZC1jfh2074o)
+[![IMAGE ALT TEXT HERE](docs/imgs/video.jpg)](https://www.youtube.com/watch?v=ZC1jfh2074o)
 
 
 Would you like to push the boundaries of drone navigation? Then participate in the dodgedrone competition!
@@ -130,3 +130,7 @@ If you want to perform steps 1-3 automatically, you can use the `launch_evaluati
 We provide an easy interface for training your navigation policy using reinforcement learning. While this is not required for the competition, it could just make your job easier if you plan on using RL.
 
 Follow [this guide](/envtest/python/README.md) to know more about how to use the training code and some tips on how to develop reinforcement learning algorithms
+
+## Submission
+
+More details about how to submit your code for evaluation will be released soon.
