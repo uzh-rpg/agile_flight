@@ -1,6 +1,7 @@
 # DodgeDrone: Vision-based Agile Drone Flight (ICRA 2022 Competition)
 
-![Intro](https://uzh-rpg.github.io/icra2022-dodgedrone/assets/intro_image.png)
+[![IMAGE ALT TEXT HERE](docs/video.png)](https://www.youtube.com/watch?v=ZC1jfh2074o)
+
 
 Would you like to push the boundaries of drone navigation? Then participate in the dodgedrone competition!
 You will get the chance to develop perception and control algorithms to navigate a drone in both static and dynamic environments. Competing in the challenge will deepen your expertise in computer vision and control, and boost your research.
