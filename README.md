@@ -57,8 +57,7 @@ catkin build
 
 The task is to control a simulated quadrotor to fly through obstacle dense environments.
 The environment contains both static and dynamic obstacles.
-You have to download the obstacle confiurations from [here]() and extract the file under /flightmare/flightpy/configs/vision.
-Afterwards, you can change specific which difficulty level and environment you want to load for testing your algorithm.
+You can specifiy which difficulty level and environment you want to load for testing your algorithm.
 The yaml configuration file is located in (/flightmare/flightpy/configs/vision/config.yaml.
 
 ```yaml
