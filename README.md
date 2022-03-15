@@ -53,6 +53,23 @@ Run the `setup_ros.bash` in the main folder of this repository, it will ask for 
 catkin build
 ```
 
+### Task  
+
+The task is to control a simulated quadrotor to fly through obstacle dense environments.
+The environment contains both static and dynamic obstacles.
+You have to download the obstacle confiurations from [here]() and extract the file under /flightmare/flightpy/configs/vision.
+Afterwards, you can change specific which difficulty level and environment you want to load for testing your algorithm.
+The yaml configuration file is located in (/flightmare/flightpy/configs/vision/config.yaml.
+
+```yaml
+environment:
+  level: "medium" # three difficulty level for obstacle configurations [easy, medium, hard]
+  env_folder: "environment_0" # configurations for dynamic and static obstacles, environment number are between [0 - 100]
+
+unity:
+  scene_id: 0 # 0 warehouse, 1 garage, 3 natureforest
+```
+
 ### Usage
 
 The usage of this code base entails two main aspects: writing your algorithm and testing it in the simulator.
@@ -113,20 +130,3 @@ Run the `setup_py.bash` in the main folder of this repository, it will ask for s
 We also provide an easy interface for training your navigation policy using reinforcement learning. While this is not required to compete, it could just make your job easier if you plan on using RL.
 
 Follow [this guide](/envtest/python/README.md) to know more about how to use the training code and some tips on how to develop reinforcement learning algorithms
-
-## Task  
-
-The task is to control a simulated quadrotor to fly through obstacle dense environments.
-The environment contains both static and dynamic obstacles.
-You have to download the obstacle confiurations from [here]() and extract the file under /flightmare/flightpy/configs/vision.
-Afterwards, you can change specific which difficulty level and environment you want to load for testing your algorithm.
-The yaml configuration file is located in (/flightmare/flightpy/configs/vision/config.yaml.
-
-```yaml
-environment:
-  level: "medium" # three difficulty level for obstacle configurations [easy, medium, hard]
-  env_folder: "environment_0" # configurations for dynamic and static obstacles, environment number are between [0 - 100]
-
-unity:
-  scene_id: 0 # 0 warehouse, 1 garage, 3 natureforest
-```
