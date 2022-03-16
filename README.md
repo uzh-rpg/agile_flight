@@ -1,6 +1,6 @@
 # DodgeDrone: Vision-based Agile Drone Flight (ICRA 2022 Competition)
 
-[![IMAGE ALT TEXT HERE](docs/imgs/video.jpg)](https://www.youtube.com/watch?v=Dkc6JI_gsgs)
+[![IMAGE ALT TEXT HERE](docs/imgs/video.jpg)](https://youtu.be/LSu25NH6fW0)
 
 
 Would you like to push the boundaries of drone navigation? Then participate in the dodgedrone competition!
