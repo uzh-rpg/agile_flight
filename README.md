@@ -71,7 +71,7 @@ Run the `setup_py.bash` in the main folder of this repository, it will ask for s
 The task is to control a simulated quadrotor to fly through obstacle dense environments.
 The environment contains both static and dynamic obstacles.
 You can specifiy which difficulty level and environment you want to load for testing your algorithm.
-The yaml configuration file is located in (/flightmare/flightpy/configs/vision/config.yaml.
+The yaml configuration file is located in (`/flightmare/flightpy/configs/vision/config.yaml`).
 
 ```yaml
 environment:
