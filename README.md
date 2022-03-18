@@ -71,7 +71,7 @@ Run the `setup_py.bash` in the main folder of this repository, it will ask for s
 The task is to control a simulated quadrotor to fly through obstacle dense environments.
 The environment contains both static and dynamic obstacles.
 You can specifiy which difficulty level and environment you want to load for testing your algorithm.
-The yaml configuration file is located in (`/flightmare/flightpy/configs/vision/config.yaml`). 
+The yaml configuration file is located in [this file](https://github.com/uzh-rpg/flightmare/blob/dev/version_22/flightpy/configs/vision/config.yaml). 
 The goal is to proceed as fast as possible 60m in positive x-direction without colliding into obstacles and exiting a pre-defined bounding box. 
 The parameters of the goal location and the bounding box can be found [here](https://github.com/uzh-rpg/agile_flight/blob/main/envtest/ros/evaluation_config.yaml).
 
