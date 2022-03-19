@@ -135,4 +135,4 @@ Follow [this guide](/envtest/python/README.md) to know more about how to use the
 
 ## Submission
 
-More details about how to submit your code for evaluation will be released soon.
+More details about how to submit your code for evaluation will be released soon. For now, you can download the code and start building your algorithm.  Also please sign up [here](https://forms.gle/xMQ6qMP1i7e1qdZy8) if you intend to participate. You will be notified when the submission website opens.
