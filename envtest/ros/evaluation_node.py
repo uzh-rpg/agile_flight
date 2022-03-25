@@ -112,7 +112,7 @@ class Evaluator:
         dist = np.linalg.norm(np.array([obs.position.x,
                                         obs.position.y,
                                         obs.position.z]))
-        margin = dist - obs.scale/2
+        margin = dist - obs.scale
         self.dist.append([msg.header.stamp.to_sec(), margin])
         if margin < 0:
             if not self.hit_obstacle:
