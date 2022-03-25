@@ -40,7 +40,7 @@ do
   echo "$ROLLOUT_NAME"
 
   cd ./envtest/ros/
-  python evaluation_node.py &
+  python3 evaluation_node.py &
   PY_PID="$!"
   cd -
 
