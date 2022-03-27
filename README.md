@@ -1,6 +1,6 @@
 # DodgeDrone: Vision-based Agile Drone Flight (ICRA 2022 Competition)
 
-[![IMAGE ALT TEXT HERE](docs/imgs/video.jpg)](https://youtu.be/LSu25NH6fW0)
+[![IMAGE ALT TEXT HERE](docs/imgs/video.png)](https://youtu.be/LSu25NH6fW0)
 
 
 Would you like to push the boundaries of drone navigation? Then participate in the dodgedrone competition!
@@ -13,6 +13,10 @@ This codebase provides the following functionalities:
 2. Training utilities to use reinforcement learning for the task of high-speed obstacle avoidance.
 
 All evaluation during the competition will be performed using the same ROS evaluation, but on previously unseen environments / obstacle configurations.
+
+## Update
+
+- **27 March 2022** Fix a static object rendering issue. Please download the new Unity Standalone using [this](https://github.com/uzh-rpg/agile_flight/blob/main/setup_py.bash#L32-L39). Also, git pull the project.
 
 ## Flight API
 
