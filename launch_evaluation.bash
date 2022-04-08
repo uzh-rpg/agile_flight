@@ -35,6 +35,7 @@ do
   rostopic pub /kingfisher/dodgeros_pilot/off std_msgs/Empty "{}" --once
   rostopic pub /kingfisher/dodgeros_pilot/reset_sim std_msgs/Empty "{}" --once
   rostopic pub /kingfisher/dodgeros_pilot/enable std_msgs/Bool "data: true" --once
+  rostopic pub /kingfisher/dodgeros_pilot/start std_msgs/Empty "{}" --once
 
   export ROLLOUT_NAME="rollout_""$i"
   echo "$ROLLOUT_NAME"
@@ -42,6 +43,10 @@ do
   cd ./envtest/ros/
   python3 evaluation_node.py &
   PY_PID="$!"
+
+  python3 run_competition.py &
+  COMP_PID="$!"
+
   cd -
 
   sleep 0.5
@@ -55,6 +60,8 @@ do
 
   cat "$SUMMARY_FILE" "./envtest/ros/summary.yaml" > "tmp.yaml"
   mv "tmp.yaml" "$SUMMARY_FILE"
+
+  kill -SIGINT "$COMP_PID"
 done
 
 
