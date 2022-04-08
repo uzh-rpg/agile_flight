@@ -11,7 +11,7 @@ def compute_command_vision_based(state, img):
     # !!! Begin of user code !!!
     # TODO: populate the command message
     ################################################
-    print("Computing command vision-based!")
+    # print("Computing command vision-based!")
     # print(state)
     # print("Image shape: ", img.shape)
 
@@ -47,7 +47,7 @@ def compute_command_state_based(state, obstacles, rl_policy=None):
     # !!! Begin of user code !!!
     # TODO: populate the command message
     ################################################
-    print("Computing command based on obstacle information!")
+    # print("Computing command based on obstacle information!")
     # print(state)
     # print("Obstacles: ", obstacles)
 
@@ -68,7 +68,7 @@ def compute_command_state_based(state, obstacles, rl_policy=None):
     command_mode = 2
     command = AgileCommand(command_mode)
     command.t = state.t
-    command.velocity = [1.0, 0.0, 0.0]
+    command.velocity = [10.0, 0.0, 0.0]
     command.yawrate = 0.0
 
     # If you want to test your RL policy
