@@ -21,7 +21,9 @@ class AgilePilotNode:
         rospy.init_node('agile_pilot_node', anonymous=False)
 
         self.vision_based = vision_based
-        self.ppo_path = ppo_path 
+        self.rl_policy = None
+        if ppo_path is not None:
+            self.rl_policy = load_rl_policy(ppo_path)
         self.publish_commands = False
         self.cv_bridge = CvBridge()
         self.state = None
@@ -64,10 +66,7 @@ class AgilePilotNode:
             return
         if self.state is None:
             return
-        rl_policy = None
-        if self.ppo_path is not None:
-            rl_policy = load_rl_policy(self.ppo_path)
-        command = compute_command_state_based(state=self.state, obstacles=obs_data, rl_policy=rl_policy)
+        command = compute_command_state_based(state=self.state, obstacles=obs_data, rl_policy=self.rl_policy)
         self.publish_command(command)
 
     def publish_command(self, command):
