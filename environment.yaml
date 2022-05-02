@@ -1,4 +1,4 @@
-name: agileflight0
+name: agileflight
 channels:
   - conda-forge
   - pytorch
