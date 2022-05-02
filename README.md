@@ -16,6 +16,8 @@ All evaluation during the competition will be performed using the same ROS evalu
 
 ## Update
 
+- **02 May 2022** Fix a bug in the vision racing environment when computing reward function. No need to update if you are not using RL or if you have change the reward formualtion. Related to this issue #65
+
 - **27 March 2022** Fix a static object rendering issue. Please download the new Unity Standalone using [this](https://github.com/uzh-rpg/agile_flight/blob/main/setup_py.bash#L32-L39). Also, git pull the project.
 
 ## Flight API
