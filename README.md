@@ -14,6 +14,17 @@ This codebase provides the following functionalities:
 
 All evaluation during the competition will be performed using the same ROS evaluation, but on previously unseen environments / obstacle configurations.
 
+## Submission
+
+- **06 May 2022** Submission is open. Please submit your version of the file [user_code.py](https://github.com/uzh-rpg/agile_flight/blob/main/envtest/ros/user_code.py) with all needed dependencies with an email to loquercio AT berkeley DOT edu. Please use as subject *ICRA 2022 Competition: Team Name*. If you have specific dependencies, please provide instructions on how to install them. Feel free to switch from python to cpp if you want. 
+
+### Further Details
+
+- We will only evaluate on the warehouse environment with spheres obstacles. 
+- If you're using vision, you are free to use any sensor you like (depth, optical flow, RGB). The code has to run real-time on a desktop with 16 Intel Core i7-6900K with an NVIDIA Titan Xp.
+- If you're using vision, feel free to optimize the camera parameters for performance (e.g. field of view). 
+- We will two rankings, one for vision-based and another for state-based. The top three team for each category will qualify for the finals.
+
 ## Update
 
 - **02 May 2022** Fix a bug in the vision racing environment when computing reward function. No need to update if you are not using RL or if you have change the reward formualtion. Related to this issue #65
@@ -139,6 +150,4 @@ We provide an easy interface for training your navigation policy using reinforce
 
 Follow [this guide](/envtest/python/README.md) to know more about how to use the training code and some tips on how to develop reinforcement learning algorithms
 
-## Submission
 
-More details about how to submit your code for evaluation will be released soon. For now, you can download the code and start building your algorithm.  Also please sign up [here](https://forms.gle/xMQ6qMP1i7e1qdZy8) if you intend to participate. You will be notified when the submission website opens.
