@@ -21,7 +21,7 @@ All evaluation during the competition will be performed using the same ROS evalu
 ### Further Details
 
 - We will only evaluate on the warehouse environment with spheres obstacles. 
-- If you're using vision, you are free to use any sensor you like (depth, optical flow, RGB). The code has to run real-time on a desktop with 16 Intel Core i7-6900K with an NVIDIA Titan Xp.
+- If you're using vision, you are free to use any sensor you like (depth, optical flow, RGB). The code has to run real-time on a desktop with 16 Intel Core i7-6900K and an NVIDIA Titan Xp.
 - If you're using vision, feel free to optimize the camera parameters for performance (e.g. field of view). 
 - We will two rankings, one for vision-based and another for state-based. The top three team for each category will qualify for the finals.
 
